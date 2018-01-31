@@ -35,6 +35,7 @@ INSERT INTO Device_Type (SELECT distinct `DeviceModel`,"","",-1 FROM CP_Device);
 
 CREATE TABLE Device
 (
+    id int AUTO_INCREMENT,
     CustomerId VARCHAR(32) NOT NULL,
     SourceID VARCHAR(15),
     SourceName VARCHAR(64),
@@ -49,11 +50,41 @@ CREATE TABLE Device
     NumberOfRegistrations INT,
     RegistrationID VARCHAR(64) NOT NULL,
     CONSTRAINT Device_CustomerId_RegistrationID_pk PRIMARY KEY (CustomerId, RegistrationID),
-    CONSTRAINT `Device_Device_Type_Device Model_fk` FOREIGN KEY (DeviceModel) REFERENCES Device_Type (`Device Model`)
+    CONSTRAINT `Device_Device_Type_Device Model_fk` FOREIGN KEY (DeviceModel) REFERENCES Device_Type (`Device Model`),
+    UNIQUE(ID)
 );
 
 
 #Insert into device all the devices from CP_Device, properly converting date fields to be of DATE type
 INSERT INTO Device (SELECT distinct CP_Device.CustomerID,CP_Device.SourceID,CP_Device.SourceName,CP_Device.DeviceModel,CP_Device.SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),
                       PurchaseStoreName, CP_Device.PurchaseStoreState,PurchaseStoreCity, Ecomm, STR_TO_DATE(CP_Device.RegistrationDate,'%m/%d/%Y') , NumberOfRegistrations, RegistrationID FROM CP_Device);
+
+CREATE TABLE Purchase
+(
+    id INT AUTO_INCREMENT,
+    PurchaseDate DATE,
+    PurchaseStoreName VARCHAR(255),
+    PurchaseStoreState CHAR(3),
+    PurchaseStoreCity VARCHAR(255),
+    Ecomm CHAR(1),
+    Unique(id),
+    CONSTRAINT Purchase_pk PRIMARY KEY (PurchaseDate, PurchaseStoreName, PurchaseStoreState, PurchaseStoreCity, Ecomm)
+);
+    INSERT INTO Purchase (SELECT distinct null,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm FROM Device);
+
+    SELECt * FROM Purchase;
+
+ALTER TABLE Device ADD COLUMN PurchaseID INTEGER;
+ALTER TABLE Device ADD FOREIGN KEY (PurchaseID) REFERENCES Purchase(id);
+
+UPDATE Device d JOIN Purchase p ON p.PurchaseDate = d.PurchaseDate AND p.PurchaseStoreCity = d.PurchaseStoreCity
+                                          AND p.PurchaseStoreState = d.PurchaseStoreState AND p.PurchaseStoreName = d.PurchaseStoreName
+                                          AND p.Ecomm = d.Ecomm SET d.PurchaseID = p.id;
+
+ALTER TABLE Device DROP COLUMN PurchaseDate;
+ALTER TABLE Device DROP COLUMN PurchaseStoreName;
+ALTER TABLE Device DROP COLUMN PurchaseStoreCity;
+ALTER TABLE Device DROP COLUMN PurchaseStoreState;
+ALTER TABLE Device DROP COLUMN Ecomm;
+
 

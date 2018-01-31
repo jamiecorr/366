@@ -119,3 +119,19 @@ CREATE TABLE State
     CONSTRAINT CustomerId_State_pk PRIMARY KEY (CustomerId, State),
     CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
 );
+
+CREATE TABLE SubjectLine
+(
+    SubjectLine VARCHAR(255),
+    EmailID INTEGER(32) NOT NULL,
+    CONSTRAINT SubjectLine_pk PRIMARY KEY (SubjectLine,EmailID),
+    CONSTRAINT EmailID_fk FOREIGN KEY (EmailID) REFERENCES Email(id)
+);
+
+CREATE TABLE Audience
+(
+    Audience VARCHAR(255),
+    EmailID INTEGER(32) NOT NULL,
+    CONSTRAINT audience_pk PRIMARY KEY (Audience,EmailID),
+    CONSTRAINT EmailID_fk FOREIGN KEY (EmailID) REFERENCES Email(id)
+);

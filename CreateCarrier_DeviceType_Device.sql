@@ -22,7 +22,7 @@ INSERT INTO Carrier(ID,CarrierName) VALUES(-1,"No Carrier Information Found");
     CONSTRAINT CarrierID___fk FOREIGN KEY (CarrierID) REFERENCES Carrier (ID)
 );
 
-#Moves CP_DEvice_Model to the new table Device_Type
+#Moves CP_Device_Model to the new table Device_Type
 UPDATE CP_Device_Model JOIN Carrier ON CarrierName = Carrier SET Carrier = ID;
 
 INSERT INTO Device_Type (SELECT distinct * FROM CP_Device_Model);
@@ -49,7 +49,7 @@ CREATE TABLE Device
     RegistrationDate DATE,
     NumberOfRegistrations INT,
     RegistrationID VARCHAR(64) NOT NULL,
-    CONSTRAINT Device_CustomerID_RegistrationID_pk PRIMARY KEY (CustomerID, RegistrationID),
+    CONSTRAINT Device_RegistrationID_pk PRIMARY KEY (RegistrationID),
     CONSTRAINT `Device_Device_Type_Device Model_fk` FOREIGN KEY (DeviceModel) REFERENCES Device_Type (`Device Model`),
     UNIQUE(ID)
 );

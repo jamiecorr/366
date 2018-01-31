@@ -36,7 +36,7 @@ INSERT INTO Device_Type (SELECT distinct `DeviceModel`,"","",-1 FROM CP_Device);
 CREATE TABLE Device
 (
     id int AUTO_INCREMENT,
-    CustomerId VARCHAR(32) NOT NULL,
+    CustomerID VARCHAR(32) NOT NULL,
     SourceID VARCHAR(15),
     SourceName VARCHAR(64),
     DeviceModel VARCHAR(255),
@@ -49,7 +49,7 @@ CREATE TABLE Device
     RegistrationDate DATE,
     NumberOfRegistrations INT,
     RegistrationID VARCHAR(64) NOT NULL,
-    CONSTRAINT Device_CustomerId_RegistrationID_pk PRIMARY KEY (CustomerId, RegistrationID),
+    CONSTRAINT Device_CustomerID_RegistrationID_pk PRIMARY KEY (CustomerID, RegistrationID),
     CONSTRAINT `Device_Device_Type_Device Model_fk` FOREIGN KEY (DeviceModel) REFERENCES Device_Type (`Device Model`),
     UNIQUE(ID)
 );

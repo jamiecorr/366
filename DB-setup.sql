@@ -135,3 +135,22 @@ CREATE TABLE Audience
     CONSTRAINT audience_pk PRIMARY KEY (Audience,EmailID),
     CONSTRAINT EmailID_fk FOREIGN KEY (EmailID) REFERENCES Email(id)
 );
+
+CREATE TABLE EmailCampaign
+(
+    id INT AUTO_INCREMENT,
+    CampaignName VARCHAR(255),
+    DeploymentDate DATE,
+    CONSTRAINT EmailCampaign_pk PRIMARY KEY (CampaignName, DeploymentDate),
+    Unique(id)
+);
+
+CREATE TABLE Email
+(
+    id INT AUTO_INCREMENT,
+    Version INT,
+    EmailCampaignID INT,
+    CONSTRAINT Email_pk PRIMARY KEY (Version, EmailCampaignID),
+    CONSTRAINT Email_EmailCampaign_id_fk FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
+    UNIQUE(id)
+)

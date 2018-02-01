@@ -6,6 +6,12 @@ DROP TABLE IF EXISTS cpe366.Purchase;
 DROP TABLE IF EXISTS cpe366.Device;
 DROP TABLE IF EXISTS cpe366.Device_Type;
 DROP TABLE IF EXISTS cpe366.Carrier;
+DROP TABLE IF EXISTS cpe366.Email;
+DROP TABLE IF EXISTS cpe366.EmailCampaign;
+DROP TABLE IF EXISTS cpe366.Audience;
+DROP TABLE IF EXISTS cpe366.SubjectLine;
+
+
 
 CREATE TABLE cpe366.CP_Account LIKE cpe366_readonly.CP_Account;
 INSERT cpe366.CP_Account SELECT * FROM cpe366_readonly.CP_Account;

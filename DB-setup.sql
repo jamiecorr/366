@@ -154,3 +154,37 @@ CREATE TABLE Email
     CONSTRAINT Email_EmailCampaign_id_fk FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
     UNIQUE(id)
 )
+
+CREATE TABLE Domain
+(  
+    DomainName VARCHAR(64),
+    CONSTRAINT DomainName_pk PRIMARY KEY (DomainName)
+);
+
+CREATE TABLE EmailAddress
+(
+    EmailAddressId INTEGER(32) NOT NULL,
+	CustomerId VARCHAR(32) NOT NULL,
+    Domain VARCHAR(64),
+    CONSTRAINT EmailAddressId_pk PRIMARY KEY (EmailAddressId),
+    CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId),
+    CONSTRAINT Domain_fk FOREIGN KEY (Domain) REFERENCES Domain(DomainName)
+);
+
+CREATE TABLE Link
+(
+	LinkName VARCHAR(255),
+	LinkURL VARCHAR(255),
+	EventId INT
+	CONSTRAINT Name_URL_pk PRIMARY KEY (LinkName, LinkURL)
+	CONSTRAINT EventId_fk FOREIGN KEY (EventId) REFERENCES EmailEvent(EventId),
+);
+
+CREATE TABLE CustomerDevices
+(
+	CustomerId VARCHAR(32) NOT NULL,
+	DeviceRegistrationId VARCHAR(64) NOT NULL,
+	CONSTRAINT CustomerDevices_pk PRIMARY KEY (CustomerId, DeviceRegistrationId),
+	CONSTRAINT DeviceId_fk FOREIGN KEY (DeviceRegistrationId) REFERENCES Device(RegistrationID),
+	CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+);

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Device_Type
     CarrierID INTEGER,
 
     CONSTRAINT Device_Type_Model_Name_Type PRIMARY KEY (`Device Model`, `Device Name`, `Device type`, CarrierID),
-    CONSTRAINT CarrierID_fk FOREIGN KEY (CarrierID) REFERENCES Carrier (ID)
+    CONSTRAINT Carrier_fk FOREIGN KEY (CarrierID) REFERENCES Carrier(ID)
 );
 
 CREATE TABLE IF NOT EXISTS Device

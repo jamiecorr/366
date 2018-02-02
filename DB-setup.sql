@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Device_Type
     DeviceModel VARCHAR(255) NOT NULL,
     DeviceName VARCHAR(255),
     Devicetype VARCHAR(32),
-    CarrierID INT,
+    CarrierID INTEGER,
 
     CONSTRAINT Device_Type_Model_Name_Type PRIMARY KEY (`Device Model`, `Device Name`, `Device type`, CarrierID),
     CONSTRAINT CarrierID_fk FOREIGN KEY (CarrierID) REFERENCES Carrier (ID)
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Device
     DeviceModel VARCHAR(255),
     SerialNumber VARCHAR(64),
     RegistrationDate DATE,
-    NumberOfRegistrations INT,
+    NumberOfRegistrations INTEGER,
     RegistrationID VARCHAR(64) NOT NULL,
     CONSTRAINT Device_pk PRIMARY KEY (RegistrationID),
     CONSTRAINT Device_Type_fk FOREIGN KEY (DeviceModel) REFERENCES Device_Type (`Device Model`),
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS Customer
     CustomerId VARCHAR(32) NOT NULL,
     Permission CHAR(1),
     Tier VARCHAR(32),
-    NumRegistrations INT,
+    NumRegistrations INTEGER,
     CONSTRAINT Customer_pk PRIMARY KEY (CustomerId)
 );
 CREATE TABLE IF NOT EXISTS Gender
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS Language
 );
 CREATE TABLE IF NOT EXISTS Zip
 (
-    Zip INT,
+    Zip INTEGER,
     CustomerId VARCHAR(32) NOT NULL,
     CONSTRAINT Zip_pk PRIMARY KEY (CustomerId, Zip),
     CONSTRAINT Customer_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
@@ -146,8 +146,8 @@ CREATE TABLE IF NOT EXISTS EmailCampaign
 CREATE TABLE IF NOT EXISTS Email
 (
     id INT AUTO_INCREMENT,
-    Version INT,
-    EmailCampaignID INT,
+    Version INTEGER,
+    EmailCampaignID INTEGER,
     CONSTRAINT Email_pk PRIMARY KEY (Version, EmailCampaignID),
     CONSTRAINT EmailCampaign_fk FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
     UNIQUE(id)
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS Link
 (
 	LinkName VARCHAR(255),
 	LinkURL VARCHAR(255),
-	EventId INT,
+	EventId INTEGER,
 	CONSTRAINT Link_pk PRIMARY KEY (LinkName, LinkURL),
 	CONSTRAINT EventEvent_fk FOREIGN KEY (EventId) REFERENCES EmailEvent(EventId)
 );

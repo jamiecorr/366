@@ -34,12 +34,15 @@ CREATE TABLE Device
 
 CREATE TABLE Purchase
 (
-    id INT AUTO_INCREMENT,
     PurchaseDate DATE,
     PurchaseStoreName VARCHAR(255),
     PurchaseStoreState CHAR(3),
     PurchaseStoreCity VARCHAR(255),
     Ecomm CHAR(1),
+    DeviceRegistrationId VARCHAR(64) NOT NULL,
+    CustomerID VARCHAR(32) NOT NULL,	
+    CONSTRAINT DeviceId_fk FOREIGN KEY (DeviceRegistrationId) REFERENCES Device(RegistrationID),
+    CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId),
     Unique(id),
     CONSTRAINT Purchase_pk PRIMARY KEY (PurchaseDate, PurchaseStoreName, PurchaseStoreState, PurchaseStoreCity, Ecomm)
 );
@@ -195,13 +198,4 @@ CREATE TABLE Link
 	EventId INT
 	CONSTRAINT Name_URL_pk PRIMARY KEY (LinkName, LinkURL)
 	CONSTRAINT EventId_fk FOREIGN KEY (EventId) REFERENCES EmailEvent(EventId),
-);
-
-CREATE TABLE CustomerDevices
-(
-	CustomerId VARCHAR(32) NOT NULL,
-	DeviceRegistrationId VARCHAR(64) NOT NULL,
-	CONSTRAINT CustomerDevices_pk PRIMARY KEY (CustomerId, DeviceRegistrationId),
-	CONSTRAINT DeviceId_fk FOREIGN KEY (DeviceRegistrationId) REFERENCES Device(RegistrationID),
-	CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
 );

@@ -170,25 +170,26 @@ CREATE TABLE IF NOT EXISTS EmailAddress
 );
 
 CREATE TABLE IF NOT EXISTS EmailSentTo(
-  emailID INTEGER,
-  emailAddressId INTEGER,
+  EmailVersion INTEGER,
+  EmailCampaign INTEGER,
+  EmailAddressId INTEGER,
 
-  CONSTRAINT Email_Address_Pk PRIMARY KEY (emailID, emailAddressId),
-  CONSTRAINT FOREIGN KEY (emailAddressId) REFERENCES EmailAddress(emailAddressId),
-  FOREIGN KEY (emailId) REFERENCES Email(id)
+  CONSTRAINT Email_Address_Pk PRIMARY KEY (EmailVersion, EmailCampaign, EmailAddressId),
+  CONSTRAINT FOREIGN KEY (EmailAddressId) REFERENCES EmailAddress(EmailAddressId),
+  FOREIGN KEY (EmailVersion, EmailAddressId) REFERENCES Email(Version, EmailCampaignID)
 );
 
 CREATE TABLE IF NOT EXISTS EmailEvent(
-  eventID INTEGER AUTO_INCREMENT,
-  eventType INTEGER,
-  eventDate DATETIME,
-  emailID INTEGER,
-  emailAddressId INTEGER,
+  EventId INTEGER AUTO_INCREMENT,
+  EventType INTEGER,
+  EventDate DATETIME,
+  EmailVersion INTEGER,
+  EmailCampaign INTEGER,
+  EmailAddressId INTEGER,
 
-  CONSTRAINT Event_Pk PRIMARY KEY (eventID),
-  CONSTRAINT Event_Unique UNIQUE KEY (eventType, eventDate, emailID, emailAddressId),
-  CONSTRAINT Email_Fk FOREIGN KEY (emailID) REFERENCES EmailSentTo(emailID),
-  CONSTRAINT EmailAddress_Fk FOREIGN KEY (emailAddressId) REFERENCES EmailSentTo(emailAddressId)
+  CONSTRAINT Event_Pk PRIMARY KEY (EventId),
+  CONSTRAINT Event_Unique UNIQUE KEY (EventType, EventDate, EmailVersion, EmailAddressId, EmailAddressId),
+  CONSTRAINT Email_Fk FOREIGN KEY (EmailVersion, EmailCampaign) REFERENCES EmailSentTo(EmailVersion, EmailCampaign, EmailAddressId)
 );
 
 CREATE TABLE IF NOT EXISTS Link

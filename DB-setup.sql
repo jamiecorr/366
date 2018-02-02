@@ -1,11 +1,11 @@
-CREATE TABLE Carrier
+CREATE TABLE IF NOT EXISTS Carrier
 (
     ID INT NOT NULL AUTO_INCREMENT,
     CarrierName VARCHAR(64),
     CONSTRAINT Carrier_CarrierID_CarrierName_pk PRIMARY KEY (ID, CarrierName)
 );
 
-CREATE TABLE Device_Type
+CREATE TABLE IF NOT EXISTS Device_Type
 (
     `Device Model` VARCHAR(255) NOT NULL,
     `Device Name` VARCHAR(255),
@@ -16,7 +16,7 @@ CREATE TABLE Device_Type
     CONSTRAINT CarrierID___fk FOREIGN KEY (CarrierID) REFERENCES Carrier (ID)
 );
 
-CREATE TABLE Device
+CREATE TABLE IF NOT EXISTS Device
 (
     id int AUTO_INCREMENT,
     CustomerID VARCHAR(32) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE Device
     UNIQUE(ID)
 );
 
-CREATE TABLE Purchase
+CREATE TABLE IF NOT EXISTS Purchase
 (
     PurchaseDate DATE,
     PurchaseStoreName VARCHAR(255),
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS DeviceRegistration(
 );
 
 #Star model for Customer
-CREATE TABLE Customer
+CREATE TABLE IF NOT EXISTS Customer
 (
     CustomerId VARCHAR(32) NOT NULL,
     Permission CHAR(1),
@@ -82,35 +82,35 @@ CREATE TABLE Customer
     NumRegistrations INT,
     CONSTRAINT Customer_CustomerID_pk PRIMARY KEY (CustomerId)
 );
-CREATE TABLE Gender
+CREATE TABLE IF NOT EXISTS Gender
 (
     Gender CHAR(1),
     CustomerId VARCHAR(32) NOT NULL,
     CONSTRAINT CustomerId_Gender_pk PRIMARY KEY (CustomerId, Gender),
     CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
 );
-CREATE TABLE IncomeLevel
+CREATE TABLE IF NOT EXISTS IncomeLevel
 (
     IncomeLevel VARCHAR(32),
     CustomerId VARCHAR(32) NOT NULL,
     CONSTRAINT CustomerId_IncomeLevel_pk PRIMARY KEY (CustomerId, IncomeLevel),
     CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
 );
-CREATE TABLE Language
+CREATE TABLE IF NOT EXISTS Language
 (
     Language CHAR(3),
     CustomerId VARCHAR(32) NOT NULL,
     CONSTRAINT CustomerId_Language_pk PRIMARY KEY (CustomerId, Language),
     CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
 );
-CREATE TABLE Zip
+CREATE TABLE IF NOT EXISTS Zip
 (
     Zip INT,
     CustomerId VARCHAR(32) NOT NULL,
     CONSTRAINT CustomerId_Zip_pk PRIMARY KEY (CustomerId, Zip),
     CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
 );
-CREATE TABLE State
+CREATE TABLE IF NOT EXISTS State
 (
     State VARCHAR(32),
     CustomerId VARCHAR(32) NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE State
     CONSTRAINT CustomerId_fk FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
 );
 
-CREATE TABLE SubjectLine
+CREATE TABLE IF NOT EXISTS SubjectLine
 (
     SubjectLine VARCHAR(255),
     EmailID INTEGER(32) NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE SubjectLine
     CONSTRAINT EmailID_fk FOREIGN KEY (EmailID) REFERENCES Email(id)
 );
 
-CREATE TABLE Audience
+CREATE TABLE IF NOT EXISTS Audience
 (
     Audience VARCHAR(255),
     EmailID INTEGER(32) NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE Audience
     CONSTRAINT EmailID_fk FOREIGN KEY (EmailID) REFERENCES Email(id)
 );
 
-CREATE TABLE EmailCampaign
+CREATE TABLE IF NOT EXISTS EmailCampaign
 (
     id INT AUTO_INCREMENT,
     CampaignName VARCHAR(255),
@@ -143,7 +143,7 @@ CREATE TABLE EmailCampaign
     Unique(id)
 );
 
-CREATE TABLE Email
+CREATE TABLE IF NOT EXISTS Email
 (
     id INT AUTO_INCREMENT,
     Version INT,
@@ -153,13 +153,13 @@ CREATE TABLE Email
     UNIQUE(id)
 )
 
-CREATE TABLE Domain
+CREATE TABLE IF NOT EXISTS Domain
 (  
     DomainName VARCHAR(64),
     CONSTRAINT DomainName_pk PRIMARY KEY (DomainName)
 );
 
-CREATE TABLE EmailAddress
+CREATE TABLE IF NOT EXISTS EmailAddress
 (
     EmailAddressId INTEGER(32) NOT NULL,
 	CustomerId VARCHAR(32) NOT NULL,
@@ -169,7 +169,7 @@ CREATE TABLE EmailAddress
     CONSTRAINT Domain_fk FOREIGN KEY (Domain) REFERENCES Domain(DomainName)
 );
 
-CREATE TABLE EmailSentTo(
+CREATE TABLE IF NOT EXISTS EmailSentTo(
   emailID INTEGER,
   emailAddressId INTEGER,
 
@@ -178,7 +178,7 @@ CREATE TABLE EmailSentTo(
   FOREIGN KEY (emailId) REFERENCES Email(id)
 );
 
-CREATE TABLE EmailEvent(
+CREATE TABLE IF NOT EXISTS EmailEvent(
   eventID INTEGER AUTO_INCREMENT,
   eventType INTEGER,
   eventDate DATETIME,
@@ -191,7 +191,7 @@ CREATE TABLE EmailEvent(
   CONSTRAINT EmailAddress_Fk FOREIGN KEY (emailAddressId) REFERENCES EmailSentTo(emailAddressId)
 );
 
-CREATE TABLE Link
+CREATE TABLE IF NOT EXISTS Link
 (
 	LinkName VARCHAR(255),
 	LinkURL VARCHAR(255),

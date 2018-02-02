@@ -171,6 +171,28 @@ CREATE TABLE EmailAddress
     CONSTRAINT Domain_fk FOREIGN KEY (Domain) REFERENCES Domain(DomainName)
 );
 
+CREATE TABLE EmailSentTo(
+  emailID INTEGER,
+  emailAddressId INTEGER,
+
+  CONSTRAINT Email_Address_Pk PRIMARY KEY (emailID, emailAddressId),
+  CONSTRAINT FOREIGN KEY (emailAddressId) REFERENCES EmailAddress(emailAddressId),
+  FOREIGN KEY (emailId) REFERENCES Email(id)
+);
+
+CREATE TABLE EmailEvent(
+  eventID INTEGER AUTO_INCREMENT,
+  eventType INTEGER,
+  eventDate DATETIME,
+  emailID INTEGER,
+  emailAddressId INTEGER,
+
+  CONSTRAINT Event_Pk PRIMARY KEY (eventID),
+  CONSTRAINT Event_Unique UNIQUE KEY (eventType, eventDate, emailID, emailAddressId),
+  CONSTRAINT Email_Fk FOREIGN KEY (emailID) REFERENCES EmailSentTo(emailID),
+  CONSTRAINT EmailAddress_Fk FOREIGN KEY (emailAddressId) REFERENCES EmailSentTo(emailAddressId)
+);
+
 CREATE TABLE Link
 (
 	LinkName VARCHAR(255),

@@ -32,4 +32,3 @@ ALTER TABLE Device DROP COLUMN PurchaseStoreCity;
 ALTER TABLE Device DROP COLUMN PurchaseStoreState;
 ALTER TABLE Device DROP COLUMN Ecomm;
 
-

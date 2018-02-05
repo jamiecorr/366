@@ -94,7 +94,8 @@ CREATE TABLE IF NOT EXISTS Purchase
     CustomerID VARCHAR(32) NOT NULL,
     FOREIGN KEY (DeviceRegistrationId) REFERENCES Device(RegistrationID),
     FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId),
-    PRIMARY KEY (PurchaseDate, PurchaseStoreName, PurchaseStoreState, PurchaseStoreCity, Ecomm)
+    PRIMARY KEY (PurchaseDate, PurchaseStoreName, PurchaseStoreState, PurchaseStoreCity, Ecomm),
+    UNIQUE(id)
 );
 
 CREATE TABLE IF NOT EXISTS RegistrationSource(

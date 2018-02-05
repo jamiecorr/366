@@ -14,9 +14,7 @@ DROP TABLE CP_Device_Model;
 INSERT INTO Device_Type (SELECT distinct `DeviceModel`,"","",-1 FROM CP_Device);
 
 #Insert into device all the devices from CP_Device, properly converting date fields to be of DATE type
-INSERT INTO Device (SELECT distinct CP_Device.CustomerID,CP_Device.SourceID,CP_Device.SourceName,CP_Device.DeviceModel,CP_Device.SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),
-                      PurchaseStoreName, CP_Device.PurchaseStoreState,PurchaseStoreCity, Ecomm, STR_TO_DATE(CP_Device.RegistrationDate,'%m/%d/%Y') , NumberOfRegistrations, RegistrationID FROM CP_Device);
-
+INSERT INTO Device(CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationDate,NumberOfRegistrations,RegistrationID) (SELECT distinct CP_Device.CustomerID,CP_Device.SourceID,CP_Device.SourceName,CP_Device.DeviceModel,CP_Device.SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),PurchaseStoreName, CP_Device.PurchaseStoreState,PurchaseStoreCity, Ecomm, STR_TO_DATE(CP_Device.RegistrationDate,'%m/%d/%Y') , NumberOfRegistrations, RegistrationID FROM CP_Device);
 INSERT INTO Purchase (SELECT distinct null,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm FROM Device);
 
 ALTER TABLE Device ADD COLUMN PurchaseID INTEGER;

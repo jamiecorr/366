@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS Device
 
 CREATE TABLE IF NOT EXISTS Purchase
 (
-    id INT NOT NULL,
+    id INT AUTO_INCREMENT NOT NULL,
     PurchaseDate DATE,
     PurchaseStoreName VARCHAR(255),
     PurchaseStoreState CHAR(3),

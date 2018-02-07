@@ -17,7 +17,8 @@ INSERT INTO Device_Type (SELECT distinct `DeviceModel`,"","",-1 FROM CP_Device);
 INSERT INTO Device(CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationDate,NumberOfRegistrations,RegistrationID)
   (SELECT distinct CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),PurchaseStoreName, PurchaseStoreState,PurchaseStoreCity, Ecomm,
      STR_TO_DATE(CP_Device.RegistrationDate,'%m/%d/%Y') , NumberOfRegistrations, RegistrationID FROM CP_Device);
-INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm FROM Device);
+
+INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
 
 ALTER TABLE Device ADD COLUMN PurchaseID INTEGER;
 ALTER TABLE Device ADD FOREIGN KEY (PurchaseID) REFERENCES Purchase(id);
@@ -32,5 +33,6 @@ ALTER TABLE Device DROP COLUMN PurchaseDate;
 ALTER TABLE Device DROP COLUMN PurchaseStoreName;
 ALTER TABLE Device DROP COLUMN PurchaseStoreCity;
 ALTER TABLE Device DROP COLUMN PurchaseStoreState;
+ALTER TABLE Device DROP COLUMN CustomerID;
 ALTER TABLE Device DROP COLUMN Ecomm;
 

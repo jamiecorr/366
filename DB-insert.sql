@@ -6,9 +6,6 @@ INSERT INTO Carrier(ID,CarrierName) VALUES(-1,"No Carrier Information Found");
 UPDATE CP_Device_Model JOIN Carrier ON CarrierName = Carrier SET Carrier = ID;
 INSERT INTO Device_Type (SELECT distinct * FROM CP_Device_Model);
 
-#Removes old table
-DROP TABLE CP_Device_Model;
-
 #Due to the presence of device models from sales records not in the device models table we must pull device
 #models from device as well
 INSERT INTO Device_Type (SELECT distinct `DeviceModel`,"","",-1 FROM CP_Device);

@@ -22,43 +22,36 @@ CREATE TABLE IF NOT EXISTS Customer
     CustomerId VARCHAR(32) NOT NULL,
     Permission CHAR(1),
     Tier VARCHAR(32),
+    RegistrationDate DATE,
     NumRegistrations INTEGER,
-    PRIMARY KEY (CustomerId)
+    RegisteredAt INTEGER,
+    PRIMARY KEY (CustomerId),
+    FOREIGN KEY (registeredAt) REFERENCES RegistrationSource(regSourceId)
 );
 CREATE TABLE IF NOT EXISTS Gender
 (
-    Gender CHAR(1),
-    CustomerId VARCHAR(32) NOT NULL,
-    PRIMARY KEY (CustomerId, Gender),
-    FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+    Gender CHAR(1) NOT NULL,
+    PRIMARY KEY (Gender)
 );
 CREATE TABLE IF NOT EXISTS IncomeLevel
 (
-    IncomeLevel VARCHAR(32),
-    CustomerId VARCHAR(32) NOT NULL,
-    PRIMARY KEY (CustomerId, IncomeLevel),
-    FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+    IncomeLevel VARCHAR(32) NOT NULL,
+    PRIMARY KEY (IncomeLevel)
 );
 CREATE TABLE IF NOT EXISTS Language
 (
-    Language CHAR(3),
-    CustomerId VARCHAR(32) NOT NULL,
-    PRIMARY KEY (CustomerId, Language),
-    FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+    Language CHAR(3) NOT NULL,
+    PRIMARY KEY (Language)
 );
 CREATE TABLE IF NOT EXISTS Zip
 (
     Zip INTEGER,
-    CustomerId VARCHAR(32) NOT NULL,
-    PRIMARY KEY (CustomerId, Zip),
-    FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+    PRIMARY KEY (Zip)
 );
 CREATE TABLE IF NOT EXISTS State
 (
-    State VARCHAR(32),
-    CustomerId VARCHAR(32) NOT NULL,
-    PRIMARY KEY (CustomerId, State),
-    FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+    State VARCHAR(32) NOT NULL,
+    PRIMARY KEY (State)
 );
 
 CREATE TABLE IF NOT EXISTS Device
@@ -101,17 +94,6 @@ CREATE TABLE IF NOT EXISTS Purchase
 CREATE TABLE IF NOT EXISTS RegistrationSource(
   regSourceId INTEGER PRIMARY KEY,
   regSourceName VARCHAR(32)
-);
-
-CREATE TABLE IF NOT EXISTS CustomerAccount(
-  customerID VARCHAR(32),
-  registrationDate DATE,
-  numRegistrations INTEGER,
-  registeredAt INTEGER,
-
-  PRIMARY KEY (customerID, registrationDate),
-  FOREIGN KEY (customerID) REFERENCES Customer(CustomerID),
-  FOREIGN KEY (registeredAt) REFERENCES RegistrationSource(regSourceId)
 );
 
 CREATE TABLE IF NOT EXISTS DeviceRegistration(

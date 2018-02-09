@@ -33,3 +33,4 @@ ALTER TABLE Device DROP COLUMN PurchaseStoreState;
 ALTER TABLE Device DROP COLUMN CustomerID;
 ALTER TABLE Device DROP COLUMN Ecomm;
 
+INSERT INTO EmailCampaign(CampaignName,DeploymentDate) (SELECT Distinct EmailCampaignName,STR_TO_DATE(Fulldate,'%m/%d/%Y') FROM CP_Email_Final);

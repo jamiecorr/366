@@ -10,6 +10,15 @@ INSERT INTO Device_Type (SELECT distinct * FROM CP_Device_Model);
 #models from device as well
 INSERT INTO Device_Type (SELECT distinct `DeviceModel`,"","",-1 FROM CP_Device);
 
+# Fills RegistrationSource
+INSERT INTO RegistrationSource (regSourceId, regSourceName)
+SELECT DISTINCT RegSourceID as sourceID, RegSourceName as sourceName
+FROM CP_Account
+UNION
+SELECT DISTINCT SourceID as sourceID, SourceName as sourceName
+FROM CP_Device
+ORDER BY sourceID;
+
 #Insert into device all the devices from CP_Device, properly converting date fields to be of DATE type
 INSERT INTO Device(CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationDate,NumberOfRegistrations,RegistrationID)
   (SELECT distinct CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),PurchaseStoreName, PurchaseStoreState,PurchaseStoreCity, Ecomm,

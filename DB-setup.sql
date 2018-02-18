@@ -15,7 +15,10 @@ CREATE TABLE IF NOT EXISTS Device_Type
     PRIMARY KEY (DeviceModel, DeviceName, DeviceType, CarrierID),
     FOREIGN KEY (CarrierID) REFERENCES Carrier(ID)
 );
-
+CREATE TABLE IF NOT EXISTS RegistrationSource(
+  regSourceId INTEGER PRIMARY KEY,
+  regSourceName VARCHAR(32)
+);
 #Star model for Customer
 CREATE TABLE IF NOT EXISTS Customer
 (
@@ -89,11 +92,6 @@ CREATE TABLE IF NOT EXISTS Purchase
     FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId),
     PRIMARY KEY (CustomerID, DeviceRegistrationId),
     UNIQUE(id)
-);
-
-CREATE TABLE IF NOT EXISTS RegistrationSource(
-  regSourceId INTEGER PRIMARY KEY,
-  regSourceName VARCHAR(32)
 );
 
 CREATE TABLE IF NOT EXISTS DeviceRegistration(

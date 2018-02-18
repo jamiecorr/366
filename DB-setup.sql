@@ -60,18 +60,9 @@ CREATE TABLE IF NOT EXISTS State
 CREATE TABLE IF NOT EXISTS Device
 (
     id int AUTO_INCREMENT,
-    CustomerID VARCHAR(32) NOT NULL,
-    SourceID VARCHAR(15),
-    SourceName VARCHAR(64),
     DeviceModel VARCHAR(255),
     SerialNumber VARCHAR(64),
-    PurchaseDate DATE,
-    PurchaseStoreName VARCHAR(64),
-    PurchaseStoreState CHAR(3),
-    PurchaseStoreCity VARCHAR(64),
-    Ecomm CHAR(1),
     RegistrationDate DATE,
-    NumberOfRegistrations INT,
     RegistrationID VARCHAR(64) NOT NULL,
     CONSTRAINT Device_RegistrationID_pk PRIMARY KEY (RegistrationID),
     CONSTRAINT Device_Device_Type_DeviceModel_fk FOREIGN KEY (DeviceModel) REFERENCES Device_Type (DeviceModel),

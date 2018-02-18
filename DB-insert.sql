@@ -1,3 +1,10 @@
+ALTER TABLE Device ADD COLUMN PurchaseDate DATE;
+ALTER TABLE Device ADD COLUMN PurchaseStoreName VARCHAR(64);
+ALTER TABLE Device ADD COLUMN PurchaseStoreCity VARCHAR(64);
+ALTER TABLE Device ADD COLUMN PurchaseStoreState CHAR(3);
+ALTER TABLE Device ADD COLUMN CustomerID VARCHAR(32);
+ALTER TABLE Device ADD COLUMN Ecomm CHAR(1);
+
 #Inserts all possible carriers into carrier table, plus a dummy -1 value
 INSERT INTO Carrier(CarrierName) (SELECT distinct Carrier from CP_Device_Model);
 INSERT INTO Carrier(ID,CarrierName) VALUES(-1,"No Carrier Information Found");
@@ -23,7 +30,7 @@ ORDER BY sourceID;
 INSERT INTO Device(CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationDate,NumberOfRegistrations,RegistrationID)
   (SELECT distinct CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),PurchaseStoreName, PurchaseStoreState,PurchaseStoreCity, Ecomm,
      STR_TO_DATE(CP_Device.RegistrationDate,'%m/%d/%Y') , NumberOfRegistrations, RegistrationID FROM CP_Device);
-
+#TODO Customer MUST Exist before this row
 INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
 
 ALTER TABLE Device ADD COLUMN PurchaseID INTEGER;
@@ -32,8 +39,6 @@ ALTER TABLE Device ADD FOREIGN KEY (PurchaseID) REFERENCES Purchase(id);
 UPDATE Device d JOIN Purchase p ON p.PurchaseDate = d.PurchaseDate AND p.PurchaseStoreCity = d.PurchaseStoreCity
                                           AND p.PurchaseStoreState = d.PurchaseStoreState AND p.PurchaseStoreName = d.PurchaseStoreName
                                           AND p.Ecomm = d.Ecomm SET d.PurchaseID = p.id;
-
-SELECT * FROM Device JOIN Purchase P ON Device.PurchaseID = P.id;
 
 ALTER TABLE Device DROP COLUMN PurchaseDate;
 ALTER TABLE Device DROP COLUMN PurchaseStoreName;

@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS CP_Account;
 DROP TABLE IF EXISTS CP_Device;
 DROP TABLE IF EXISTS CP_Device_Model;
@@ -38,3 +39,4 @@ INSERT CP_Device_Model SELECT * FROM cpe366_readonly.CP_Device_Model;
 
 CREATE TABLE CP_Email_Final LIKE cpe366_readonly.CP_Email_Final;
 INSERT CP_Email_Final SELECT * FROM cpe366_readonly.CP_Email_Final;
+SET FOREIGN_KEY_CHECKS=1;

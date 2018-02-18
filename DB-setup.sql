@@ -104,33 +104,35 @@ CREATE TABLE IF NOT EXISTS EmailCampaign
     Unique(id)
 );
 
-CREATE TABLE IF NOT EXISTS Email
-(
-    id INT AUTO_INCREMENT,
-    Version INTEGER,
-    EmailCampaignID INTEGER,
-    PRIMARY KEY (Version, EmailCampaignID),
-    FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
-    UNIQUE(id)
-);
-
 CREATE TABLE IF NOT EXISTS SubjectLine
 (
+    id INT AUTO_INCREMENT,
     SubjectLine VARCHAR(255),
-    EmailID INTEGER(32) NOT NULL,
-    PRIMARY KEY (SubjectLine,EmailID),
-    FOREIGN KEY (EmailID) REFERENCES Email(id)
+    PRIMARY KEY (SubjectLine),
+    UNIQUE(id)
 );
 
 CREATE TABLE IF NOT EXISTS Audience
 (
+    id INT AUTO_INCREMENT,
     Audience VARCHAR(255),
-    EmailID INTEGER(32) NOT NULL,
-    PRIMARY KEY (Audience,EmailID),
-    FOREIGN KEY (EmailID) REFERENCES Email(id)
+    PRIMARY KEY (Audience),
+    UNIQUE(id)
 );
 
-
+CREATE TABLE IF NOT EXISTS Email
+(
+    id INT AUTO_INCREMENT,
+    Version varchar(255),
+    EmailCampaignID INTEGER,
+    SubjectLineID int,
+    AudienceID int,
+    PRIMARY KEY (Version, EmailCampaignID,SubjectLineId,AudienceID),
+    FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
+    FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id),
+    FOREIGN KEY (AudienceID) REFERENCES Audience(id),
+    UNIQUE(id)
+);
 
 CREATE TABLE IF NOT EXISTS Domain
 (
@@ -159,7 +161,7 @@ CREATE TABLE IF NOT EXISTS EmailSentTo(
 
 CREATE TABLE IF NOT EXISTS EmailEvent(
   eventID INTEGER AUTO_INCREMENT,
-  eventType INTEGER,
+  eventType varchar(32),
   eventDate DATETIME,
   emailID INTEGER,
   emailAddressId INTEGER,

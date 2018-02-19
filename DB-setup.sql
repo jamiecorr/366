@@ -162,6 +162,17 @@ CREATE TABLE IF NOT EXISTS EmailSentTo(
    FOREIGN KEY (emailID) REFERENCES Email(id)
 );
 
+CREATE TABLE IF NOT EXISTS Link
+(
+   LinkID INT AUTO_INCREMENT,
+   LinkName VARCHAR(255),
+   LinkURL VARCHAR(255),
+   EmailID INT,
+   PRIMARY KEY (LinkID),
+   FOREIGN KEY (EmailID) REFERENCES Email(id),
+   UNIQUE KEY (LinkID, LinkName, LinkURL, EmailID)
+);
+
 CREATE TABLE IF NOT EXISTS EmailEvent(
    eventID INT AUTO_INCREMENT,
    eventType varchar(32),
@@ -174,15 +185,4 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
    FOREIGN KEY (emailID) REFERENCES EmailSentTo(emailID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailSentTo(emailAddressID),
    FOREIGN KEY (linkID) REFERENCES Link(LinkID)
-);
-
-CREATE TABLE IF NOT EXISTS Link
-(
-   LinkID INT AUTO_INCREMENT,
-   LinkName VARCHAR(255),
-   LinkURL VARCHAR(255),
-   EmailID INT,
-   PRIMARY KEY (LinkID),
-   FOREIGN KEY (EmailID) REFERENCES Email(id),
-   UNIQUE KEY (LinkID, LinkName, LinkURL, EmailID)
 );

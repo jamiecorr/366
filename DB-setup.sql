@@ -10,47 +10,52 @@ CREATE TABLE IF NOT EXISTS Device_Type
     DeviceModel VARCHAR(255) NOT NULL,
     DeviceName VARCHAR(255),
     Devicetype VARCHAR(32),
-    CarrierID INTEGER,
-
+    CarrierID INT,
     PRIMARY KEY (DeviceModel, DeviceName, DeviceType, CarrierID),
     FOREIGN KEY (CarrierID) REFERENCES Carrier(ID)
 );
+
 CREATE TABLE IF NOT EXISTS RegistrationSource(
-  regSourceId INTEGER PRIMARY KEY,
-  regSourceName VARCHAR(32)
+    regSourceID INT PRIMARY KEY,
+    regSourceName VARCHAR(32)
 );
-#Star model for Customer
+
 CREATE TABLE IF NOT EXISTS Customer
 (
-    CustomerId VARCHAR(32) NOT NULL,
+    CustomerID VARCHAR(32) NOT NULL,
     Permission CHAR(1),
     Tier VARCHAR(32),
     RegistrationDate DATE,
-    NumRegistrations INTEGER,
-    RegisteredAt INTEGER,
-    PRIMARY KEY (CustomerId),
-    FOREIGN KEY (registeredAt) REFERENCES RegistrationSource(regSourceId)
+    NumRegistrations INT,
+    RegisteredAt INT,
+    PRIMARY KEY (CustomerID),
+    FOREIGN KEY (registeredAt) REFERENCES RegistrationSource(regSourceID)
 );
+
 CREATE TABLE IF NOT EXISTS Gender
 (
     Gender CHAR(1) NOT NULL,
     PRIMARY KEY (Gender)
 );
+
 CREATE TABLE IF NOT EXISTS IncomeLevel
 (
     IncomeLevel VARCHAR(32) NOT NULL,
     PRIMARY KEY (IncomeLevel)
 );
+
 CREATE TABLE IF NOT EXISTS Language
 (
     Language CHAR(3) NOT NULL,
     PRIMARY KEY (Language)
 );
+
 CREATE TABLE IF NOT EXISTS Zip
 (
-    Zip INTEGER,
+    Zip INT,
     PRIMARY KEY (Zip)
 );
+
 CREATE TABLE IF NOT EXISTS State
 (
     State VARCHAR(32) NOT NULL,
@@ -59,7 +64,7 @@ CREATE TABLE IF NOT EXISTS State
 
 CREATE TABLE IF NOT EXISTS Device
 (
-    id int AUTO_INCREMENT,
+    id INT AUTO_INCREMENT,
     DeviceModel VARCHAR(255),
     SerialNumber VARCHAR(64),
     RegistrationDate DATE,
@@ -77,22 +82,21 @@ CREATE TABLE IF NOT EXISTS Purchase
     PurchaseStoreState CHAR(3),
     PurchaseStoreCity VARCHAR(255),
     Ecomm CHAR(1),
-    DeviceRegistrationId VARCHAR(64) NOT NULL,
+    DeviceRegistrationID VARCHAR(64) NOT NULL,
     CustomerID VARCHAR(32) NOT NULL,
-    FOREIGN KEY (DeviceRegistrationId) REFERENCES Device(RegistrationID),
-    FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId),
-    PRIMARY KEY (CustomerID, DeviceRegistrationId),
+    FOREIGN KEY (DeviceRegistrationID) REFERENCES Device(RegistrationID),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    PRIMARY KEY (CustomerID, DeviceRegistrationID),
     UNIQUE(id)
 );
 
 CREATE TABLE IF NOT EXISTS DeviceRegistration(
-  deviceRegistrationID VARCHAR(64),
-  registeredAt INTEGER,
-  registrationDate DATE,
-
-  PRIMARY KEY (deviceRegistrationID),
-  FOREIGN KEY (deviceRegistrationID) REFERENCES Device(RegistrationID),
-  FOREIGN KEY (registeredAt) REFERENCES RegistrationSource(regSourceId)
+    deviceRegistrationID VARCHAR(64),
+    registeredAt INT,
+    registrationDate DATE,
+    PRIMARY KEY (deviceRegistrationID),
+    FOREIGN KEY (deviceRegistrationID) REFERENCES Device(RegistrationID),
+    FOREIGN KEY (registeredAt) REFERENCES RegistrationSource(regSourceID)
 );
 
 CREATE TABLE IF NOT EXISTS EmailCampaign
@@ -124,10 +128,10 @@ CREATE TABLE IF NOT EXISTS Email
 (
     id INT AUTO_INCREMENT,
     Version varchar(255),
-    EmailCampaignID INTEGER,
+    EmailCampaignID INT,
     SubjectLineID int,
     AudienceID int,
-    PRIMARY KEY (Version, EmailCampaignID,SubjectLineId,AudienceID),
+    PRIMARY KEY (Version, EmailCampaignID,SubjectLineID,AudienceID),
     FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
     FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id),
     FOREIGN KEY (AudienceID) REFERENCES Audience(id),
@@ -142,41 +146,43 @@ CREATE TABLE IF NOT EXISTS Domain
 
 CREATE TABLE IF NOT EXISTS EmailAddress
 (
-    EmailAddressId INTEGER(32) NOT NULL,
-	CustomerId VARCHAR(32) NOT NULL,
+    EmailAddressID INT(32) NOT NULL,
+    CustomerID VARCHAR(32) NOT NULL,
     Domain VARCHAR(64),
-    PRIMARY KEY (EmailAddressId),
-    FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId),
+    PRIMARY KEY (EmailAddressID),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
     FOREIGN KEY (Domain) REFERENCES Domain(DomainName)
 );
 
 CREATE TABLE IF NOT EXISTS EmailSentTo(
-  emailID INTEGER,
-  emailAddressId INTEGER,
-
-  PRIMARY KEY (emailID, emailAddressId),
-  FOREIGN KEY (emailAddressId) REFERENCES EmailAddress(emailAddressId),
-  FOREIGN KEY (emailId) REFERENCES Email(id)
+   emailID INT,
+   emailAddressID INT,
+   PRIMARY KEY (emailID, emailAddressID),
+   FOREIGN KEY (emailAddressID) REFERENCES EmailAddress(emailAddressID),
+   FOREIGN KEY (emailID) REFERENCES Email(id)
 );
 
 CREATE TABLE IF NOT EXISTS EmailEvent(
-  eventID INTEGER AUTO_INCREMENT,
-  eventType varchar(32),
-  eventDate DATETIME,
-  emailID INTEGER,
-  emailAddressId INTEGER,
-
-  PRIMARY KEY (eventID),
-  UNIQUE KEY (eventType, eventDate, emailID, emailAddressId),
-  FOREIGN KEY (emailID) REFERENCES EmailSentTo(emailID),
-  FOREIGN KEY (emailAddressId) REFERENCES EmailSentTo(emailAddressId)
+   eventID INT AUTO_INCREMENT,
+   eventType varchar(32),
+   eventDate DATETIME,
+   emailID INT,
+   emailAddressID INT,
+   linkID INT,
+   PRIMARY KEY (eventID),
+   UNIQUE KEY (eventType, eventDate, emailID, emailAddressID),
+   FOREIGN KEY (emailID) REFERENCES EmailSentTo(emailID),
+   FOREIGN KEY (emailAddressID) REFERENCES EmailSentTo(emailAddressID),
+   FOREIGN KEY (linkID) REFERENCES Link(LinkID)
 );
 
 CREATE TABLE IF NOT EXISTS Link
 (
-	LinkName VARCHAR(255),
-	LinkURL VARCHAR(255),
-	EventId INTEGER,
-	PRIMARY KEY (LinkName, LinkURL),
-	FOREIGN KEY (EventId) REFERENCES EmailEvent(EventId)
+   LinkID INT AUTO_INCREMENT,
+   LinkName VARCHAR(255),
+   LinkURL VARCHAR(255),
+   EmailID INT,
+   PRIMARY KEY (LinkID),
+   FOREIGN KEY (EmailID) REFERENCES Email(id),
+   UNIQUE KEY (LinkID, LinkName, LinkURL, EmailID)
 );

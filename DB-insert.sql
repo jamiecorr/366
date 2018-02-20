@@ -1,20 +1,27 @@
 #Inserting into Customer
+INSERT INTO Gender(Gender) VALUES('N');
 INSERT INTO Gender(Gender) VALUES('m');
 INSERT INTO Gender(Gender) VALUES('f');
 
+
+SELECT * FROM Gender;
 INSERT INTO IncomeLevel(IncomeLevel) SELECT distinct IncomeLevel FROM `CP_Account`;
 INSERT INTO Language(Language) SELECT distinct Language FROM `CP_Account`;
 INSERT INTO Zip(Zip) SELECT distinct ZIP FROM `CP_Account`;
 INSERT INTO State(State) SELECT distinct State FROM `CP_Account`;
 
-INSERT INTO Customer(CustomerID,Permission,Tier,RegistrationDate,NumRegistrations,RegisteredAt,GenderID,IncomeLevelID,LanguageID,ZipID,StateID)
-    SELECT distinct r.CustomerId,r.Permission,r.CustomerTier,r.RegDate,r.RegSourceID,a.`NumberOfRegistrations`,g.id,i.id,l.id,z.id,s.id FROM `CP_Account` r
-        JOIN Gender g ON g.Gender = r.Gender
-        JOIN IncomeLevel i ON i.IncomeLevel= r.IncomeLevel
-        JOIN Language l ON l.Language = r.Language
-        JOIN Zip z ON z.Zip = r.Zip
-        JOIN State s ON s.State = r.State
-        JOIN `CP_Device` a ON r.`customerID` = a.`CustomerID`;
+
+# Fills RegistrationSource
+INSERT INTO RegistrationSource (regSourceId, regSourceName)
+SELECT DISTINCT RegSourceID as sourceID, RegSourceName as sourceName
+FROM CP_Account
+UNION
+SELECT DISTINCT SourceID as sourceID, SourceName as sourceName
+FROM CP_Device
+ORDER BY sourceID;
+
+SELECT distinct regSourceID FROm RegistrationSource x;
+SELECT distinct regSourceID FROm CP_Account x;
 
 ALTER TABLE Device ADD COLUMN PurchaseDate DATE;
 ALTER TABLE Device ADD COLUMN PurchaseStoreName VARCHAR(64);
@@ -35,24 +42,24 @@ INSERT INTO Device_Type (SELECT distinct * FROM CP_Device_Model);
 #models from device as well
 INSERT INTO Device_Type (SELECT distinct `DeviceModel`,"","",-1 FROM CP_Device);
 
-# Fills RegistrationSource
-INSERT INTO RegistrationSource (regSourceId, regSourceName)
-SELECT DISTINCT RegSourceID as sourceID, RegSourceName as sourceName
-FROM CP_Account
-UNION
-SELECT DISTINCT SourceID as sourceID, SourceName as sourceName
-FROM CP_Device
-ORDER BY sourceID;
-
 #Insert into device all the devices from CP_Device, properly converting date fields to be of DATE type
-INSERT INTO Device(CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationDate,NumberOfRegistrations,RegistrationID)
-  (SELECT distinct CustomerID,SourceID,SourceName,DeviceModel,SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),PurchaseStoreName, PurchaseStoreState,PurchaseStoreCity, Ecomm,
-     STR_TO_DATE(CP_Device.RegistrationDate,'%m/%d/%Y') , NumberOfRegistrations, RegistrationID FROM CP_Device);
-#TODO Customer MUST Exist before this row
-INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
+INSERT INTO Device(CustomerID,DeviceModel,SerialNumber,PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationDate,RegistrationID)
+  SELECT distinct CustomerID,DeviceModel,SerialNumber,STR_TO_DATE(CP_Device.PurchaseDate,'%m/%d/%Y'),PurchaseStoreName, PurchaseStoreState,PurchaseStoreCity, Ecomm,
+     STR_TO_DATE(CP_Device.RegistrationDate,'%m/%d/%Y'), RegistrationID FROM CP_Device;
 
 ALTER TABLE Device ADD COLUMN PurchaseID INTEGER;
 ALTER TABLE Device ADD FOREIGN KEY (PurchaseID) REFERENCES Purchase(id);
+
+INSERT INTO Customer(CustomerID,Permission,Tier,RegistrationDate,RegisteredAt,NumRegistrations,GenderID,IncomeLevelID,LanguageID,ZipID,StateID)
+  SELECT distinct r.CustomerId,r.Permission,r.CustomerTier,STR_TO_DATE(r.RegDate,'%m/%d/%Y'),r.RegSourceID,a.NumberOfRegistrations,g.id,i.id,l.id,z.id,s.id FROM `CP_Account` r
+        JOIN Gender g ON g.Gender = r.Gender
+        JOIN IncomeLevel i ON i.IncomeLevel= r.IncomeLevel
+        JOIN Language l ON l.Language = r.Language
+        JOIN Zip z ON z.Zip = r.Zip
+        JOIN State s ON s.State = r.State
+        JOIN CP_Device a ON r.customerID = a.CustomerID;
+#TODO Customer MUST Exist before this row
+INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
 
 UPDATE Device d JOIN Purchase p ON p.PurchaseDate = d.PurchaseDate AND p.PurchaseStoreCity = d.PurchaseStoreCity
                                           AND p.PurchaseStoreState = d.PurchaseStoreState AND p.PurchaseStoreName = d.PurchaseStoreName
@@ -87,7 +94,7 @@ JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
 JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
                     AND CP_Email_Final.EmailVersion = Email.Version;
 #Fills Link
-INSERT INTO LINK(EmailID,LinkName,LinkURL)  SELECT CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL, Email.id
+INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL, Email.id
 FROM Email
    JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
    JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName

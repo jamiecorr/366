@@ -92,3 +92,15 @@ FROM Email
    JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
    JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
                    AND CP_Email_Final.EmailVersion = Email.Version;
+
+# Fills EmailEvent using EmailSentTo and CP_Email tables
+INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
+SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),
+        e.id, ef.EmailID, l.LinkID
+FROM Email e
+JOIN EmailCampaign ec ON e.EmailCampaignID = ec.id
+JOIN CP_Email_Final ef ON ef.EmailCampaignName = ec.CampaignName
+                    AND ef.EmailVersion = e.Version
+JOIN Link l ON l.EmailID = e.id
+WHERE l.LinkURL = ef.EmailURL
+AND l.LinkName = ef.HyperlinkName;

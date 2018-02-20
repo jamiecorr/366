@@ -86,3 +86,9 @@ SELECT Email.id, CP_Email_Final.EmailID FROM Email
 JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
 JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
                     AND CP_Email_Final.EmailVersion = Email.Version;
+#Fills Link
+INSERT INTO LINK(EmailID,LinkName,LinkURL)  SELECT CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL, Email.id
+FROM Email
+   JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
+   JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
+                   AND CP_Email_Final.EmailVersion = Email.Version;

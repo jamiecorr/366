@@ -1,14 +1,19 @@
 #Inserting into Customer
+INSERT INTO Gender(id,Gender) VALUES(-1,'N');
 INSERT INTO Gender(Gender) VALUES('N');
 INSERT INTO Gender(Gender) VALUES('m');
 INSERT INTO Gender(Gender) VALUES('f');
 
 
 SELECT * FROM Gender;
+INSERT INTO IncomeLevel(id,IncomeLevel) VALUES(-1,"Unknown");
 INSERT INTO IncomeLevel(IncomeLevel) SELECT distinct IncomeLevel FROM `CP_Account`;
 INSERT INTO Language(Language) SELECT distinct Language FROM `CP_Account`;
+INSERT INTO Language(id,Language) VALUES(-1,"N/A");
 INSERT INTO Zip(Zip) SELECT distinct ZIP FROM `CP_Account`;
+INSERT INTO Zip(id,Zip) VALUES(-1,-1);
 INSERT INTO State(State) SELECT distinct State FROM `CP_Account`;
+INSERT INTO State(id,State) VALUES(-1,"Unknown");
 
 
 # Fills RegistrationSource
@@ -51,16 +56,20 @@ ALTER TABLE Device ADD COLUMN PurchaseID INTEGER;
 ALTER TABLE Device ADD FOREIGN KEY (PurchaseID) REFERENCES Purchase(id);
 
 INSERT INTO Customer(CustomerID,Permission,Tier,RegistrationDate,RegisteredAt,NumRegistrations,GenderID,IncomeLevelID,LanguageID,ZipID,StateID)
-  SELECT distinct r.CustomerId,r.Permission,r.CustomerTier,STR_TO_DATE(r.RegDate,'%m/%d/%Y'),r.RegSourceID,a.NumberOfRegistrations,g.id,i.id,l.id,z.id,s.id FROM `CP_Account` r
-        JOIN Gender g ON g.Gender = r.Gender
-        JOIN IncomeLevel i ON i.IncomeLevel= r.IncomeLevel
-        JOIN Language l ON l.Language = r.Language
-        JOIN Zip z ON z.Zip = r.Zip
-        JOIN State s ON s.State = r.State
-        JOIN CP_Device a ON r.customerID = a.CustomerID;
-#TODO Customer MUST Exist before this row
-INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
+  SELECT r.CustomerId,r.Permission,r.CustomerTier,STR_TO_DATE(r.RegDate,'%m/%d/%Y') as regDate,r.RegSourceID,0,-1,-1,-1,-1,-1 FROM `CP_Account` r group by CustomerId;
+#catch all customers not actually in the customer Table
+INSERT INTO Customer(CustomerID) (SELECT distinct Device.CustomerID FROM Device WHERE NOT Device.CustomerID IN ( SELECT distinct CustomerID FROM Customer));
 
+UPDATE Customer c JOIN (SELECT CustomerID,NumberOfRegistrations FROM CP_Device group BY  CustomerID) as z ON c.CustomerID = z.CustomerID SET c.NumRegistrations = z.NumberOfRegistrations;
+
+UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN Gender G ON r.Gender = G.Gender SET c.GenderID = G.id;
+UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN IncomeLevel G ON r.IncomeLevel = G.IncomeLevel SET c.IncomeLevelID = G.id;
+UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN Language G ON r.Language = G.Language SET c.LanguageId = G.id;
+UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN Zip G ON r.ZIP= G.Zip SET c.ZipID = G.id;
+UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN State G ON r.State = G.State SET c.StateID = G.id;
+
+INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
+#TODO THIS IS BROKEN
 UPDATE Device d JOIN Purchase p ON p.PurchaseDate = d.PurchaseDate AND p.PurchaseStoreCity = d.PurchaseStoreCity
                                           AND p.PurchaseStoreState = d.PurchaseStoreState AND p.PurchaseStoreName = d.PurchaseStoreName
                                           AND p.Ecomm = d.Ecomm SET d.PurchaseID = p.id;
@@ -84,30 +93,22 @@ SELECT DISTINCT DomainName FROM CP_Account;
 
 # Fills EmailAddress with info from the CP_Acoount table
 INSERT INTO EmailAddress (EmailAddressID, CustomerID, Domain)
-SELECT EmailID, CustomerID, DomainName
+SELECT distinct EmailID, CustomerID, DomainName
 FROM CP_Account;
+
+#TODO BROKEN BELOW
 
 # Fills EmailSentTo table using Email and EmailAddress
 INSERT INTO EmailSentTo (emailID, emailAddressID)
-SELECT Email.id, CP_Email_Final.EmailID FROM Email
+SELECT distinct Email.id, CP_Email_Final.EmailID FROM Email
 JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
 JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
                     AND CP_Email_Final.EmailVersion = Email.Version;
 #Fills Link
-INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL, Email.id
+INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
 FROM Email
    JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
    JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
                    AND CP_Email_Final.EmailVersion = Email.Version;
 
-# Fills EmailEvent using EmailSentTo and CP_Email tables
-INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
-SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),
-        e.id, ef.EmailID, l.LinkID
-FROM Email e
-JOIN EmailCampaign ec ON e.EmailCampaignID = ec.id
-JOIN CP_Email_Final ef ON ef.EmailCampaignName = ec.CampaignName
-                    AND ef.EmailVersion = e.Version
-JOIN Link l ON l.EmailID = e.id
-WHERE l.LinkURL = ef.EmailURL
-AND l.LinkName = ef.HyperlinkName;
+SELECT * FROM Customer;

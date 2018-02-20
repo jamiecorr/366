@@ -70,3 +70,19 @@ INSERT INTO Audience(Audience) SELECT DISTINCT AudienceSegment FROM CP_Email_Fin
 INSERT INTO SubjectLine(SubjectLine) SELECT DISTINCT SubjectLineCode FROM CP_Email_Final;
 INSERT INTO Email(Version,EmailCampaignID,SubjectLineID,AudienceID) SELECT distinct r.EmailVersion,c.id,s.id,a.id FROM CP_Email_Final r JOIN EmailCampaign c ON r.EmailCampaignName = c.CampaignName AND STR_TO_DATE(r.Fulldate,'%m/%d/%Y') = c.DeploymentDate
   JOIN Audience a ON r.AudienceSegment = a.Audience JOIN SubjectLine s ON s.SubjectLine = r.SubjectLineCode;
+
+# Fills Domain with domain names from CP_Account
+INSERT INTO Domain (DomainName)
+SELECT DISTINCT DomainName FROM CP_Account;
+
+# Fills EmailAddress with info from the CP_Acoount table
+INSERT INTO EmailAddress (EmailAddressID, CustomerID, Domain)
+SELECT EmailID, CustomerID, DomainName
+FROM CP_Account;
+
+# Fills EmailSentTo table using Email and EmailAddress
+INSERT INTO EmailSentTo (emailID, emailAddressID)
+SELECT Email.id, CP_Email_Final.EmailID FROM Email
+JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
+JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
+                    AND CP_Email_Final.EmailVersion = Email.Version;

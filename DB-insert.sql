@@ -1,3 +1,21 @@
+#Inserting into Customer
+INSERT INTO Gender(Gender) VALUES('m');
+INSERT INTO Gender(Gender) VALUES('f');
+
+INSERT INTO IncomeLevel(IncomeLevel) SELECT distinct IncomeLevel FROM `CP_Account`;
+INSERT INTO Language(Language) SELECT distinct Language FROM `CP_Account`;
+INSERT INTO Zip(Zip) SELECT distinct ZIP FROM `CP_Account`;
+INSERT INTO State(State) SELECT distinct State FROM `CP_Account`;
+
+INSERT INTO Customer(CustomerID,Permission,Tier,RegistrationDate,NumRegistrations,RegisteredAt,GenderID,IncomeLevelID,LanguageID,ZipID,StateID)
+    SELECT distinct r.CustomerId,r.Permission,r.CustomerTier,r.RegDate,r.RegSourceID,a.`NumberOfRegistrations`,g.id,i.id,l.id,z.id,s.id FROM `CP_Account` r
+        JOIN Gender g ON g.Gender = r.Gender
+        JOIN IncomeLevel i ON i.IncomeLevel= r.IncomeLevel
+        JOIN Language l ON l.Language = r.Language
+        JOIN Zip z ON z.Zip = r.Zip
+        JOIN State s ON s.State = r.State
+        JOIN `CP_Device` a ON r.`customerID` = a.`CustomerID`
+
 ALTER TABLE Device ADD COLUMN PurchaseDate DATE;
 ALTER TABLE Device ADD COLUMN PurchaseStoreName VARCHAR(64);
 ALTER TABLE Device ADD COLUMN PurchaseStoreCity VARCHAR(64);

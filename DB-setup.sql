@@ -20,6 +20,41 @@ CREATE TABLE IF NOT EXISTS RegistrationSource(
     regSourceName VARCHAR(32)
 );
 
+CREATE TABLE IF NOT EXISTS Gender
+(   id INT AUTO_INCREMENT,
+    Gender CHAR(1) NOT NULL,
+    PRIMARY KEY (Gender),
+    UNIQUE(id)
+);
+
+CREATE TABLE IF NOT EXISTS IncomeLevel
+(   id INT AUTO_INCREMENT,
+    IncomeLevel VARCHAR(32) NOT NULL,
+    PRIMARY KEY (IncomeLevel),
+    UNIQUE(id)
+);
+
+CREATE TABLE IF NOT EXISTS Language
+(   id INT AUTO_INCREMENT,
+    Language CHAR(3) NOT NULL,
+    PRIMARY KEY (Language),
+    UNIQUE(id)
+);
+
+CREATE TABLE IF NOT EXISTS Zip
+(   id INT AUTO_INCREMENT,
+    Zip INT,
+    PRIMARY KEY (Zip),
+    UNIQUE(id)
+);
+
+CREATE TABLE IF NOT EXISTS State
+(   id INT AUTO_INCREMENT,
+    State VARCHAR(127) NOT NULL,
+    PRIMARY KEY (State),
+    UNIQUE (id)
+);
+
 CREATE TABLE IF NOT EXISTS Customer
 (
     CustomerID VARCHAR(32) NOT NULL,
@@ -28,38 +63,18 @@ CREATE TABLE IF NOT EXISTS Customer
     RegistrationDate DATE,
     NumRegistrations INT,
     RegisteredAt INT,
+    GenderID INT,
+    IncomeLevelID INT,
+    LanguageID INT,
+    ZipID INT,
+    StateID INT,
     PRIMARY KEY (CustomerID),
+    FOREIGN KEY (GenderID) REFERENCES Gender(id),
+    FOREIGN KEY (IncomeLevelID) REFERENCES IncomeLevel(id),
+    FOREIGN KEY (LanguageID) REFERENCES Language(id),
+    FOREIGN KEY (ZipID) REFERENCES Zip(id),
+    FOREIGN KEY (StateID) REFERENCES State(id),
     FOREIGN KEY (registeredAt) REFERENCES RegistrationSource(regSourceID)
-);
-
-CREATE TABLE IF NOT EXISTS Gender
-(
-    Gender CHAR(1) NOT NULL,
-    PRIMARY KEY (Gender)
-);
-
-CREATE TABLE IF NOT EXISTS IncomeLevel
-(
-    IncomeLevel VARCHAR(32) NOT NULL,
-    PRIMARY KEY (IncomeLevel)
-);
-
-CREATE TABLE IF NOT EXISTS Language
-(
-    Language CHAR(3) NOT NULL,
-    PRIMARY KEY (Language)
-);
-
-CREATE TABLE IF NOT EXISTS Zip
-(
-    Zip INT,
-    PRIMARY KEY (Zip)
-);
-
-CREATE TABLE IF NOT EXISTS State
-(
-    State VARCHAR(32) NOT NULL,
-    PRIMARY KEY (State)
 );
 
 CREATE TABLE IF NOT EXISTS Device

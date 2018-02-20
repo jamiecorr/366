@@ -14,7 +14,7 @@ INSERT INTO Customer(CustomerID,Permission,Tier,RegistrationDate,NumRegistration
         JOIN Language l ON l.Language = r.Language
         JOIN Zip z ON z.Zip = r.Zip
         JOIN State s ON s.State = r.State
-        JOIN `CP_Device` a ON r.`customerID` = a.`CustomerID`
+        JOIN `CP_Device` a ON r.`customerID` = a.`CustomerID`;
 
 ALTER TABLE Device ADD COLUMN PurchaseDate DATE;
 ALTER TABLE Device ADD COLUMN PurchaseStoreName VARCHAR(64);

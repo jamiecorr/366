@@ -95,13 +95,10 @@ INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDat
 #TODO BROKEN BELOW
 
 # Fills EmailSentTo table using Email and EmailAddress
-INSERT INTO EmailSentTo (EmailVersion,EmailCampaignID,SubjectLineID,AudienceID,emailAddressID)
-    SELECT distinct EmailVersion,c.id,s.id,a.id, f.emailID FROM CP_Email_Final f
-      JOIN Audience a ON f.AudienceSegment = a.Audience
-      JOIN EmailCampaign c ON f.EmailCampaignName = c.CampaignName
-      JOIN SubjectLine s ON f.SubjectLineCode = s.SubjectLine;
+INSERT INTO EmailSentTo (EmailVersion,emailAddressID,EmailCampaignID,SubjectLineID,AudienceID)
+    SELECT distinct EmailVersion,f.EmailID,1,1,1 FROM CP_Email_Final f;
 
-
+SELECT * FROM EmailCampaign;
 #Fills Link
 INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
 FROM Email

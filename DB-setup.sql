@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS Email
     PRIMARY KEY (Version, EmailCampaignID,SubjectLineID,AudienceID),
     FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
     FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id),
-    FOREIGN KEY (AudienceID) REFERENCES Audience(id),
+    FOREIGN KEY (AudienceID) REFERENCES Audience(id)
 );
 
 CREATE TABLE IF NOT EXISTS Domain
@@ -168,19 +168,14 @@ CREATE TABLE IF NOT EXISTS EmailAddress
 );
 
 CREATE TABLE IF NOT EXISTS EmailSentTo(
-   emailID INT,
    emailAddressID INT,
    EmailVersion varchar(255),
    EmailCampaignID INT,
    SubjectLineID int,
    AudienceID int,
-   PRIMARY KEY (emailID, emailAddressID),
+   PRIMARY KEY (EmailVersion,EmailCampaignID,SubjectLineID,AudienceID, emailAddressID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailAddress(emailAddressID),
-   FOREIGN KEY (emailID) REFERENCES Email(id),
-   FOREIGN KEY EmailVerion REFERENCES Email(Version),
-   FOREIGN KEY EmailCampaignID REFERENCES Email(EmailCampaignID),
-   FOREIGN KEY SubjectLineID REFERENCES Email(SubjectLineID),
-   FOREIGN KEY AudienceID REFERENCES Email(AudienceID)
+   FOREIGN KEY (EmailVersion) REFERENCES Email(Version)
 );
 
 CREATE TABLE IF NOT EXISTS Link
@@ -193,12 +188,8 @@ CREATE TABLE IF NOT EXISTS Link
    SubjectLineID int,
    AudienceID int,
    PRIMARY KEY (LinkID),
-   FOREIGN KEY (EmailID) REFERENCES Email(id),
-   UNIQUE KEY (LinkID, LinkName, LinkURL, EmailID),
-   FOREIGN KEY EmailVerion REFERENCES Email(Version),
-   FOREIGN KEY EmailCampaignID REFERENCES Email(EmailCampaignID),
-   FOREIGN KEY SubjectLineID REFERENCES Email(SubjectLineID),
-   FOREIGN KEY AudienceID REFERENCES Email(AudienceID)
+   UNIQUE KEY (LinkID, LinkName, LinkURL, EmailVersion,EmailCampaignID,SubjectLineID,AudienceID),
+   FOREIGN KEY (EmailVersion) REFERENCES Email(Version)
 );
 
 
@@ -206,11 +197,14 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
    eventID INT AUTO_INCREMENT,
    eventType varchar(32),
    eventDate DATETIME,
-   emailID INT,
-   emailAddressID INT,
+   emailID int,
+   EmailVersion varchar(255),
+   EmailCampaignID INT,
+   SubjectLineID int,
+   AudienceID int,   emailAddressID INT,
    linkID INT,
    PRIMARY KEY (eventID),
-   UNIQUE KEY (eventType, eventDate, emailID, emailAddressID),
+   UNIQUE KEY (eventType, eventDate, EmailVersion,EmailCampaignID,SubjectLineID,AudienceID, emailAddressID),
    FOREIGN KEY (emailID) REFERENCES EmailSentTo(emailID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailSentTo(emailAddressID),
    FOREIGN KEY (linkID) REFERENCES Link(LinkID)

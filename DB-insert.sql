@@ -100,12 +100,11 @@ INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDat
 
 # Fills EmailSentTo table using Email and EmailAddress
 INSERT INTO EmailSentTo (emailID, emailAddressID)
-  (SELECT distinct Email.id, CP_Email_Final.EmailID FROM Email
-JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
-JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
-                    AND CP_Email_Final.EmailVersion = Email.Version
-                    AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y')
-  );
+    SELECT distinct Email.id, CP_Email_Final.EmailID FROM Email
+    JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
+    JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
+                        AND CP_Email_Final.EmailVersion = Email.Version
+                        AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
 #Fills Link
 INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
 FROM Email

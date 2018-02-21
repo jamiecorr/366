@@ -1,11 +1,9 @@
 #Inserting into Customer
 INSERT INTO Gender(id,Gender) VALUES(-1,'N');
-INSERT INTO Gender(Gender) VALUES('N');
-INSERT INTO Gender(Gender) VALUES('m');
-INSERT INTO Gender(Gender) VALUES('f');
+INSERT INTO Gender(id,Gender) VALUES(1,'M');
+INSERT INTO Gender(id,Gender) VALUES(2,'F');
 
 
-SELECT * FROM Gender;
 INSERT INTO IncomeLevel(id,IncomeLevel) VALUES(-1,"Unknown");
 INSERT INTO IncomeLevel(IncomeLevel) SELECT distinct IncomeLevel FROM `CP_Account`;
 INSERT INTO Language(Language) SELECT distinct Language FROM `CP_Account`;
@@ -24,9 +22,6 @@ UNION
 SELECT DISTINCT SourceID as sourceID, SourceName as sourceName
 FROM CP_Device
 ORDER BY sourceID;
-
-SELECT distinct regSourceID FROm RegistrationSource x;
-SELECT distinct regSourceID FROm CP_Account x;
 
 ALTER TABLE Device ADD COLUMN PurchaseDate DATE;
 ALTER TABLE Device ADD COLUMN PurchaseStoreName VARCHAR(64);
@@ -69,8 +64,10 @@ UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON 
 UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN State G ON r.State = G.State SET c.StateID = G.id;
 
 INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
-#TODO THIS IS BROKEN
-UPDATE Device d JOIN Purchase p ON p.PurchaseDate = d.PurchaseDate AND p.PurchaseStoreCity = d.PurchaseStoreCity
+
+UPDATE Device d JOIN Purchase p ON d.CustomerID = p.CustomerID AND p.DeviceRegistrationID = d.RegistrationID SET d.purchaseId = p.id;
+
+SELECT * FROM Device d JOIN Purchase p ON p.PurchaseDate = d.PurchaseDate AND p.PurchaseStoreCity = d.PurchaseStoreCity
                                           AND p.PurchaseStoreState = d.PurchaseStoreState AND p.PurchaseStoreName = d.PurchaseStoreName
                                           AND p.Ecomm = d.Ecomm SET d.PurchaseID = p.id;
 
@@ -91,27 +88,37 @@ INSERT INTO Email(Version,EmailCampaignID,SubjectLineID,AudienceID) SELECT disti
 INSERT INTO Domain (DomainName)
 SELECT DISTINCT DomainName FROM CP_Account;
 
-# Fills EmailAddress with info from the CP_Acoount table
+# Fills EmailAddress with info from the CP_Account table
 INSERT INTO EmailAddress (EmailAddressID, CustomerID, Domain)
 SELECT distinct EmailID, CustomerID, DomainName
 FROM CP_Account;
+
+
+INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDate) SELECT RegistrationID,SourceID,STR_TO_DATE(RegistrationDate,'%m/%d/%Y') FROM CP_Device;
 
 #TODO BROKEN BELOW
 
 # Fills EmailSentTo table using Email and EmailAddress
 INSERT INTO EmailSentTo (emailID, emailAddressID)
-SELECT distinct Email.id, CP_Email_Final.EmailID FROM Email
+  (SELECT distinct Email.id, CP_Email_Final.EmailID FROM Email
 JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
 JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
-                    AND CP_Email_Final.EmailVersion = Email.Version;
+                    AND CP_Email_Final.EmailVersion = Email.Version
+                    AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y')
+  );
 #Fills Link
 INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
 FROM Email
    JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
    JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
-                   AND CP_Email_Final.EmailVersion = Email.Version;
+                   AND CP_Email_Final.EmailVersion = Email.Version
+                   AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
 
-# Fills EmailEvent using EmailSentTo and CP_Email tables
+
+
+
+
+
 INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
 SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),
         e.id, ef.EmailID, l.LinkID
@@ -122,6 +129,3 @@ JOIN CP_Email_Final ef ON ef.EmailCampaignName = ec.CampaignName
 JOIN Link l ON l.EmailID = e.id
 WHERE l.LinkURL = ef.EmailURL
 AND l.LinkName = ef.HyperlinkName;
-
-
-SELECT * FROM Customer;

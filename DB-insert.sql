@@ -106,12 +106,14 @@ UPDATE EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName 
 
 SELECT * FROM EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName;
 #Fills Link
-INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
-FROM Email
-   JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
-   JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
-                   AND CP_Email_Final.EmailVersion = Email.Version
-                   AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
+#INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
+#FROM Email
+#   JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
+#   JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
+#                   AND CP_Email_Final.EmailVersion = Email.Version
+#                   AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
+insert into Link (LinkName, LinkURL, EmailCampaignID, SubjectLineID, AudienceID)
+select distinct HyperlinkName, EmailURL, 1, 1, 1 from CP_Email_Final;
 
 INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
 SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),

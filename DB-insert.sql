@@ -113,11 +113,6 @@ FROM Email
                    AND CP_Email_Final.EmailVersion = Email.Version
                    AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
 
-
-
-
-
-
 INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
 SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),
         e.id, ef.EmailID, l.LinkID

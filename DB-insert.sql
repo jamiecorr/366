@@ -67,10 +67,6 @@ INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseS
 
 UPDATE Device d JOIN Purchase p ON d.CustomerID = p.CustomerID AND p.DeviceRegistrationID = d.RegistrationID SET d.purchaseId = p.id;
 
-SELECT * FROM Device d JOIN Purchase p ON p.PurchaseDate = d.PurchaseDate AND p.PurchaseStoreCity = d.PurchaseStoreCity
-                                          AND p.PurchaseStoreState = d.PurchaseStoreState AND p.PurchaseStoreName = d.PurchaseStoreName
-                                          AND p.Ecomm = d.Ecomm SET d.PurchaseID = p.id;
-
 ALTER TABLE Device DROP COLUMN PurchaseDate;
 ALTER TABLE Device DROP COLUMN PurchaseStoreName;
 ALTER TABLE Device DROP COLUMN PurchaseStoreCity;
@@ -99,12 +95,13 @@ INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDat
 #TODO BROKEN BELOW
 
 # Fills EmailSentTo table using Email and EmailAddress
-INSERT INTO EmailSentTo (emailID, emailAddressID)
-    SELECT distinct Email.id, CP_Email_Final.EmailID FROM Email
-    JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
-    JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
-                        AND CP_Email_Final.EmailVersion = Email.Version
-                        AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
+INSERT INTO EmailSentTo (EmailVersion,EmailCampaignID,SubjectLineID,AudienceID,emailAddressID)
+    SELECT distinct EmailVersion,c.id,s.id,a.id, f.emailID FROM CP_Email_Final f
+      JOIN Audience a ON f.AudienceSegment = a.Audience
+      JOIN EmailCampaign c ON f.EmailCampaignName = c.CampaignName
+      JOIN SubjectLine s ON f.SubjectLineCode = s.SubjectLine;
+
+
 #Fills Link
 INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
 FROM Email

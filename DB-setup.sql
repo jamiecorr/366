@@ -176,6 +176,10 @@ CREATE TABLE IF NOT EXISTS EmailSentTo(
    PRIMARY KEY (EmailVersion,EmailCampaignID,SubjectLineID,AudienceID, emailAddressID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailAddress(emailAddressID),
    FOREIGN KEY (EmailVersion) REFERENCES Email(Version)
+   CONSTRAINT a FOREIGN KEY (SubjectLineID) REFERENCES EmailCampaign(id)
+   CONSTRAINT b FOREIGN KEY (EmailCampaignID) REFERENCES SubjectLine(id)
+   CONSTRAINT c FOREIGN KEY (AudienceID) REFERENCES Audience(id)
+
 );
 
 CREATE TABLE IF NOT EXISTS Link

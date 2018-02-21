@@ -103,7 +103,6 @@ INSERT INTO EmailSentTo (EmailVersion,emailAddressID,EmailCampaignID,SubjectLine
 
 UPDATE EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName SET e.EmailCampaignID = c.id;
 
-
 SELECT * FROM EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName;
 #Fills Link
 #INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL

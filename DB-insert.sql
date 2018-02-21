@@ -130,8 +130,20 @@ ALTER TABLE Link MODIFY SubjectLineID INTEGER;
 ALTER TABLE Link MODIFY AudienceID INTEGER;
 
 ALTER TABLE Link ADD CONSTRAINT
-FOREIGN KEY (EmailVersion, EmailCampaignID, SubjectLineID, AudienceID)
-REFERENCES Email(Version, EmailCampaignID, SubjectLineID, AudienceID);
+FOREIGN KEY (EmailVersion)
+REFERENCES Email(Version);
+
+ALTER TABLE Link ADD CONSTRAINT
+FOREIGN KEY (AudienceID)
+REFERENCES Audience(id);
+
+ALTER TABLE Link ADD CONSTRAINT
+FOREIGN KEY (EmailCampaignID)
+REFERENCES EmailCampaign(id);
+
+ALTER TABLE Link ADD CONSTRAINT
+FOREIGN KEY (SubjectLineID)
+REFERENCES SubjectLine(id);
 
 INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
 SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),

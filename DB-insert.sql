@@ -89,16 +89,22 @@ INSERT INTO EmailAddress (EmailAddressID, CustomerID, Domain)
 SELECT distinct EmailID, CustomerID, DomainName
 FROM CP_Account;
 
-
 INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDate) SELECT RegistrationID,SourceID,STR_TO_DATE(RegistrationDate,'%m/%d/%Y') FROM CP_Device;
 
 #TODO BROKEN BELOW
 
 # Fills EmailSentTo table using Email and EmailAddress
-INSERT INTO EmailSentTo (EmailVersion,emailAddressID,EmailCampaignID,SubjectLineID,AudienceID)
-    SELECT distinct EmailVersion,f.EmailID,1,1,1 FROM CP_Email_Final f;
+ALTER TABLE EmailSentTo MODIFY EmailCampaignID varchar(255);
+ALTER TABLE EmailSentTo MODIFY SubjectLineID varchar(255);
+ALTER TABLE EmailSentTo MODIFY AudienceID varchar(255);
 
-SELECT * FROM EmailCampaign;
+INSERT INTO EmailSentTo (EmailVersion,emailAddressID,EmailCampaignID,SubjectLineID,AudienceID)
+    SELECT distinct EmailVersion,f.EmailID,f.EmailCampaignName,f.SubjectLineCode,f.AudienceSegment FROM CP_Email_Final f where f.EmailID in (SELECT EmailAddressID FROM EmailAddress);
+
+UPDATE EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName SET e.EmailCampaignID = c.id;
+
+
+SELECT * FROM EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName;
 #Fills Link
 INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
 FROM Email

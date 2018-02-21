@@ -175,9 +175,9 @@ CREATE TABLE IF NOT EXISTS EmailSentTo(
    AudienceID int,
    PRIMARY KEY (EmailVersion,EmailCampaignID,SubjectLineID,AudienceID, emailAddressID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailAddress(emailAddressID),
-   FOREIGN KEY (EmailVersion) REFERENCES Email(Version)
-   CONSTRAINT a FOREIGN KEY (SubjectLineID) REFERENCES EmailCampaign(id)
-   CONSTRAINT b FOREIGN KEY (EmailCampaignID) REFERENCES SubjectLine(id)
+   FOREIGN KEY (EmailVersion) REFERENCES Email(Version),
+   CONSTRAINT a FOREIGN KEY (SubjectLineID) REFERENCES EmailCampaign(id),
+   CONSTRAINT b FOREIGN KEY (EmailCampaignID) REFERENCES SubjectLine(id),
    CONSTRAINT c FOREIGN KEY (AudienceID) REFERENCES Audience(id)
 
 );
@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
    linkID INT,
    PRIMARY KEY (eventID),
    UNIQUE KEY (eventType, eventDate, EmailVersion,EmailCampaignID,SubjectLineID,AudienceID, emailAddressID),
-   FOREIGN KEY (emailID) REFERENCES EmailSentTo(emailID),
+   CONSTRAINT a FOREIGN KEY (EmailVersion,EmailCampaignID,SubjectLineID,AudienceID) REFERENCES EmailSentTo(EmailVersion,EmailCampaignID,SubjectLineID,AudienceID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailSentTo(emailAddressID),
    FOREIGN KEY (linkID) REFERENCES Link(LinkID)
 );

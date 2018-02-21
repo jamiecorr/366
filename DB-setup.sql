@@ -201,7 +201,6 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
    eventID INT AUTO_INCREMENT,
    eventType varchar(32),
    eventDate DATETIME,
-   emailID int,
    EmailVersion varchar(255),
    EmailCampaignID INT,
    SubjectLineID int,

@@ -104,15 +104,34 @@ INSERT INTO EmailSentTo (EmailVersion,emailAddressID,EmailCampaignID,SubjectLine
 UPDATE EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName SET e.EmailCampaignID = c.id;
 
 SELECT * FROM EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName;
-#Fills Link
+
 #INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
 #FROM Email
 #   JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
 #   JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
 #                   AND CP_Email_Final.EmailVersion = Email.Version
 #                   AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
-insert into Link (LinkName, LinkURL, EmailCampaignID, SubjectLineID, AudienceID)
-select distinct HyperlinkName, EmailURL, 1, 1, 1 from CP_Email_Final;
+
+# Inserts link w dummy values
+ALTER TABLE Link MODIFY EmailCampaignID varchar(255);
+ALTER TABLE Link MODIFY SubjectLineID varchar(255);
+ALTER TABLE Link MODIFY AudienceID varchar(255);
+
+insert into Link (LinkName, LinkURL, EmailVersion, EmailCampaignID, SubjectLineID, AudienceID)
+select distinct HyperlinkName, EmailURL, EmailVersion, EmailCampaignName, SubjectLineCode, AudienceSegment from CP_Email_Final
+where EmailID in (SELECT EmailAddressID FROM EmailAddress);
+
+UPDATE Link l JOIN EmailCampaign c ON l.EmailCampaignID = c.CampaignName SET l.EmailCampaignID = c.id;
+UPDATE Link l JOIN SubjectLine s on l.SubjectLineID = s.SubjectLine SET l.SubjectLineID = s.id;
+UPDATE Link l JOIN Audience a on l.AudienceID = a.Audience SET l.AudienceID = a.id;
+
+ALTER TABLE Link MODIFY EmailCampaignID INTEGER;
+ALTER TABLE Link MODIFY SubjectLineID INTEGER;
+ALTER TABLE Link MODIFY AudienceID INTEGER;
+
+ALTER TABLE Link ADD CONSTRAINT
+FOREIGN KEY (EmailVersion, EmailCampaignID, SubjectLineID, AudienceID)
+REFERENCES Email(Version, EmailCampaignID, SubjectLineID, AudienceID);
 
 INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
 SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),

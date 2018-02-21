@@ -141,7 +141,6 @@ CREATE TABLE IF NOT EXISTS Audience
 
 CREATE TABLE IF NOT EXISTS Email
 (
-    id INT AUTO_INCREMENT,
     Version varchar(255),
     EmailCampaignID INT,
     SubjectLineID int,
@@ -150,7 +149,6 @@ CREATE TABLE IF NOT EXISTS Email
     FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
     FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id),
     FOREIGN KEY (AudienceID) REFERENCES Audience(id),
-    UNIQUE(id)
 );
 
 CREATE TABLE IF NOT EXISTS Domain
@@ -170,15 +168,19 @@ CREATE TABLE IF NOT EXISTS EmailAddress
 );
 
 CREATE TABLE IF NOT EXISTS EmailSentTo(
+   emailID INT,
    emailAddressID INT,
-   emailVersion VARCHAR(255),
-   emailCampaign INT,
-   emailSubject INT,
-   emailAudience INT,
-   PRIMARY KEY (emailAddressID, emailVersion, emailCampaign, emailSubject, emailAudience),
+   EmailVersion varchar(255),
+   EmailCampaignID INT,
+   SubjectLineID int,
+   AudienceID int,
+   PRIMARY KEY (emailID, emailAddressID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailAddress(emailAddressID),
-   FOREIGN KEY (emailVersion, emailCampaign, emailSubject, emailAudience)
-      REFERENCES Email(Version, EmailCampaignID, SubjectLineID, AudienceID)
+   FOREIGN KEY (emailID) REFERENCES Email(id),
+   FOREIGN KEY EmailVerion REFERENCES Email(Version),
+   FOREIGN KEY EmailCampaignID REFERENCES Email(EmailCampaignID),
+   FOREIGN KEY SubjectLineID REFERENCES Email(SubjectLineID),
+   FOREIGN KEY AudienceID REFERENCES Email(AudienceID)
 );
 
 CREATE TABLE IF NOT EXISTS Link
@@ -186,11 +188,19 @@ CREATE TABLE IF NOT EXISTS Link
    LinkID INT AUTO_INCREMENT,
    LinkName VARCHAR(255),
    LinkURL VARCHAR(255),
-   EmailID INT,
+   EmailVersion varchar(255),
+   EmailCampaignID INT,
+   SubjectLineID int,
+   AudienceID int,
    PRIMARY KEY (LinkID),
    FOREIGN KEY (EmailID) REFERENCES Email(id),
-   UNIQUE KEY (LinkID, LinkName, LinkURL, EmailID)
+   UNIQUE KEY (LinkID, LinkName, LinkURL, EmailID),
+   FOREIGN KEY EmailVerion REFERENCES Email(Version),
+   FOREIGN KEY EmailCampaignID REFERENCES Email(EmailCampaignID),
+   FOREIGN KEY SubjectLineID REFERENCES Email(SubjectLineID),
+   FOREIGN KEY AudienceID REFERENCES Email(AudienceID)
 );
+
 
 CREATE TABLE IF NOT EXISTS EmailEvent(
    eventID INT AUTO_INCREMENT,

@@ -170,11 +170,15 @@ CREATE TABLE IF NOT EXISTS EmailAddress
 );
 
 CREATE TABLE IF NOT EXISTS EmailSentTo(
-   emailID INT,
    emailAddressID INT,
-   PRIMARY KEY (emailID, emailAddressID),
+   emailVersion VARCHAR(255),
+   emailCampaign INT,
+   emailSubject INT,
+   emailAudience INT,
+   PRIMARY KEY (emailAddressID, emailVersion, emailCampaign, emailSubject, emailAudience),
    FOREIGN KEY (emailAddressID) REFERENCES EmailAddress(emailAddressID),
-   FOREIGN KEY (emailID) REFERENCES Email(id)
+   FOREIGN KEY (emailVersion, emailCampaign, emailSubject, emailAudience)
+      REFERENCES Email(Version, EmailCampaignID, SubjectLineID, AudienceID)
 );
 
 CREATE TABLE IF NOT EXISTS Link

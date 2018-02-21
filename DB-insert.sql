@@ -94,14 +94,22 @@ INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDat
 #TODO BROKEN BELOW
 
 # Fills EmailSentTo table using Email and EmailAddress
-ALTER TABLE EmailSentTo MODIFY EmailCampaignID varchar(255);
-ALTER TABLE EmailSentTo MODIFY SubjectLineID varchar(255);
-ALTER TABLE EmailSentTo MODIFY AudienceID varchar(255);
 
 ALTER TABLE EmailSentTo DROP FOREIGN KEY a;
 ALTER TABLE EmailSentTo DROP FOREIGN KEY b;
 ALTER TABLE EmailSentTo DROP FOREIGN KEY c;
 
+ALTER TABLE EmailSentTo DROP INDEX  a;
+ALTER TABLE EmailSentTo DROP INDEX  b;
+ALTER TABLE EmailSentTo DROP INDEX  c;
+
+ALTER TABLE EmailEvent DROP FOREIGN KEY a;
+ALTER TABLE EmailEvent DROP INDEX  a;
+
+
+ALTER TABLE EmailSentTo MODIFY EmailCampaignID varchar(255);
+ALTER TABLE EmailSentTo MODIFY SubjectLineID varchar(255);
+ALTER TABLE EmailSentTo MODIFY AudienceID varchar(255);
 
 INSERT INTO EmailSentTo (EmailVersion,emailAddressID,EmailCampaignID,SubjectLineID,AudienceID)
     SELECT distinct EmailVersion,f.EmailID,f.EmailCampaignName,f.SubjectLineCode,f.AudienceSegment FROM CP_Email_Final f where f.EmailID in (SELECT EmailAddressID FROM EmailAddress);
@@ -113,26 +121,15 @@ ALTER TABLE EmailSentTo ADD FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(i
 UPDATE EmailSentTo e JOIN Audience c ON e.AudienceID = c.Audience SET e.AudienceID = c.id;
 ALTER TABLE EmailSentTo MODIFY AudienceID int(32);
 ALTER TABLE EmailSentTo ADD FOREIGN KEY (AudienceID) REFERENCES Audience(id);
-
-UPDATE EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName SET e.EmailCampaignID = c.id;
-
-
+#Todo fix foreign keys in EmailSentTo and EmailEvent
+#UPDATE EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName SET e.EmailCampaignID = c.id;
 #Fills Link
-ALTER TABLE Link MODIFY EmailCampaignID varchar(255);
-ALTER TABLE Link MODIFY SubjectLineID varchar(255);
-ALTER TABLE Link MODIFY AudienceID varchar(255);
-
-insert into Link (LinkName, LinkURL, EmailVersion, EmailCampaignID, SubjectLineID, AudienceID)
-select distinct HyperlinkName, EmailURL, EmailVersion, EmailCampaignName, SubjectLineCode, AudienceSegment from CP_Email_Final
-where EmailID in (SELECT EmailAddressID FROM EmailAddress);
-
-UPDATE Link l JOIN EmailCampaign c ON l.EmailCampaignID = c.CampaignName SET l.EmailCampaignID = c.id;
-UPDATE Link l JOIN SubjectLine s on l.SubjectLineID = s.SubjectLine SET l.SubjectLineID = s.id;
-UPDATE Link l JOIN Audience a on l.AudienceID = a.Audience SET l.AudienceID = a.id;
-
-ALTER TABLE Link MODIFY EmailCampaignID INTEGER;
-ALTER TABLE Link MODIFY SubjectLineID INTEGER;
-ALTER TABLE Link MODIFY AudienceID INTEGER;
+INSERT INTO Link(EmailID,LinkName,LinkURL)  SELECT Email.id,CP_Email_Final.HyperlinkName, CP_Email_Final.EmailURL
+FROM Email
+   JOIN EmailCampaign ON Email.EmailCampaignID = EmailCampaign.id
+   JOIN CP_Email_Final ON CP_Email_Final.EmailCampaignName = EmailCampaign.CampaignName
+                   AND CP_Email_Final.EmailVersion = Email.Version
+                   AND EmailCampaign.DeploymentDate = STR_TO_DATE(CP_Email_Final.EmailEventDateTime, '%m/%d/%y');
 
 ALTER TABLE Link ADD CONSTRAINT
 FOREIGN KEY (EmailVersion)
@@ -150,14 +147,10 @@ ALTER TABLE Link ADD CONSTRAINT
 FOREIGN KEY (SubjectLineID)
 REFERENCES SubjectLine(id);
 
+ALTER TABLE EmailEvent MODIFY EmailCampaignID varchar(255);
+ALTER TABLE EmailEvent MODIFY SubjectLineID varchar(255);
+ALTER TABLE EmailEvent MODIFY AudienceID varchar(255);
 
-INSERT INTO EmailEvent (eventType, eventDate, emailID, emailAddressID, linkID)
-SELECT EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),
-        e.id, ef.EmailID, l.LinkID
-FROM Email e
-JOIN EmailCampaign ec ON e.EmailCampaignID = ec.id
-JOIN CP_Email_Final ef ON ef.EmailCampaignName = ec.CampaignName
-                    AND ef.EmailVersion = e.Version
-JOIN Link l ON l.EmailID = e.id
-WHERE l.LinkURL = ef.EmailURL
-AND l.LinkName = ef.HyperlinkName;
+INSERT INTO EmailEvent (eventType, eventDate, EmailVersion, EmailCampaignID, SubjectLineID, AudienceID, EmailID, linkID)
+select distinct EmailEventType, STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'), EmailVersion, EmailCampaignName, SubjectLineCode, AudienceSegment, EmailID , null from CP_Email_Final
+where EmailID in (SELECT EmailAddressID FROM EmailAddress);

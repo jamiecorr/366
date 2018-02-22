@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS Email
     id INT AUTO_INCREMENT,
     EmailCampaignID INT,
     PRIMARY KEY (id),
-    FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id)
+    FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign (id),
     UNIQUE(id)
 );
 
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS EmailSubject
     SubjectLineID INT,
     PRIMARY KEY (EmailID, SubjectLineID),
     FOREIGN KEY (EmailID) REFERENCES Email(id),
-    FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id),
+    FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id)
 
 );
 
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS EmailAudience
     AudienceID INT,
     PRIMARY KEY (EmailID, AudienceID),
     FOREIGN KEY (EmailID) REFERENCES Email(id),
-    FOREIGN KEY (AudienceID) REFERENCES Audience(id),
+    FOREIGN KEY (AudienceID) REFERENCES Audience(id)
 
 );
 
@@ -203,11 +203,10 @@ CREATE TABLE IF NOT EXISTS EmailAddress
 
 CREATE TABLE IF NOT EXISTS EmailSentTo(
    emailAddressID INT,
-   EmailID INT
-   -- maybe both
+   EmailID INT,
    PRIMARY KEY (EmailID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailAddress(emailAddressID),
-   FOREIGN KEY (EmailID) REFERENCES Email(id),
+   FOREIGN KEY (EmailID) REFERENCES Email(id)
 );
 
 CREATE TABLE IF NOT EXISTS Link

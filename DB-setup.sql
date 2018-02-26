@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS EmailVersion
 (
     EmailID INT,
     VersionID INT,
-    PRIMARY KEY (EmailID, VersionID),
+    PRIMARY KEY (EmailID),
     FOREIGN KEY (EmailID) REFERENCES Email(id),
     FOREIGN KEY (VersionID) REFERENCES Version(id)
 );
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS EmailSubject
 (
     EmailID INT,
     SubjectLineID INT,
-    PRIMARY KEY (EmailID, SubjectLineID),
+    PRIMARY KEY (EmailID),
     FOREIGN KEY (EmailID) REFERENCES Email(id),
     FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id)
 
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS EmailAudience
 (
     EmailID INT,
     AudienceID INT,
-    PRIMARY KEY (EmailID, AudienceID),
+    PRIMARY KEY (EmailID),
     FOREIGN KEY (EmailID) REFERENCES Email(id),
     FOREIGN KEY (AudienceID) REFERENCES Audience(id)
 

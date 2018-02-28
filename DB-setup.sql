@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS Domain
 CREATE TABLE IF NOT EXISTS EmailAddress
 (
     EmailAddressID INT(32) NOT NULL,
-    CustomerID VARCHAR(32) NOT NULL,
+    CustomerID VARCHAR(32),
     Domain VARCHAR(64),
     PRIMARY KEY (EmailAddressID),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
    emailAddressID INT,
    linkID INT,
    PRIMARY KEY (eventID),
-   UNIQUE KEY (eventType, eventDate, EmailID, emailAddressID),
+   UNIQUE KEY (eventType, eventDate, EmailID, emailAddressID, linkID),
    CONSTRAINT d FOREIGN KEY (EmailID) REFERENCES EmailSentTo(EmailID),
    FOREIGN KEY (emailAddressID) REFERENCES EmailSentTo(emailAddressID),
    FOREIGN KEY (linkID) REFERENCES Link(LinkID)

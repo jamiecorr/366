@@ -187,6 +187,7 @@ CREATE TABLE IF NOT EXISTS EmailAudience
 
 CREATE TABLE IF NOT EXISTS Domain
 (
+    DomainID INT AUTO_INCREMENT,
     DomainName VARCHAR(64),
     PRIMARY KEY (DomainName)
 );
@@ -195,10 +196,10 @@ CREATE TABLE IF NOT EXISTS EmailAddress
 (
     EmailAddressID INT(32) NOT NULL,
     CustomerID VARCHAR(32),
-    Domain VARCHAR(64),
+    DomainID VARCHAR(64),
     PRIMARY KEY (EmailAddressID),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
-    FOREIGN KEY (Domain) REFERENCES Domain(DomainName)
+    FOREIGN KEY (DomainID) REFERENCES Domain(DomainID)
 );
 
 CREATE TABLE IF NOT EXISTS EmailSentTo(

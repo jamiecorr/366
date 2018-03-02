@@ -1,3 +1,4 @@
+import pandas
 import pymysql
 import traceback
 import datetime as dt
@@ -82,8 +83,6 @@ def insert_emails(row, cursor):
     deployment_date = dt.datetime.strptime(row[3], '%m/%d/%Y')
     email_campaign = {'campaignName': row[2], 'date': deployment_date}
     campaign_id = sel_row_id(email_campaign, SEL_EMAIL_CAMPAIGN, cursor)
-    if campaign_id is None:
-        campaign_id = insert_row(email_campaign, INS_EMAIL_CAMPAIGN, cursor)
 
     email = {'campaign': campaign_id, 'address': row[0]}
     email['email'] = insert_row(email, INS_EMAIL, cursor)
@@ -91,29 +90,23 @@ def insert_emails(row, cursor):
     audience = {'audience': row[1]}
     if audience['audience'] != '':
         audience_id = sel_row_id(audience, SEL_AUDIENCE_ID, cursor)
-        if audience_id is None:
-            audience_id = insert_row(audience, INS_AUDIENCE, cursor)
-
-        email['audience'] = audience_id
-        insert_row(email, INS_EMAIL_AUDIENCE, cursor)
+        if audience_id is not None:
+            email['audience'] = audience_id
+            insert_row(email, INS_EMAIL_AUDIENCE, cursor)
 
     subject = {'subject': row[5]}
     if subject['subject'] != '':
         subject_id = sel_row_id(subject, SEL_SUBJECT_ID, cursor)
-        if subject_id is None:
-            subject_id = insert_row(subject, INS_SUBJECT, cursor)
-
-        email['subject'] = subject_id
-        insert_row(email, INS_EMAIL_SUBJECT, cursor)
+        if subject_id is not None:
+            email['subject'] = subject_id
+            insert_row(email, INS_EMAIL_SUBJECT, cursor)
 
     version = {'version': row[1]}
     if version['version'] != '':
         version_id = sel_row_id(version, SEL_VERSION_ID, cursor)
-        if version_id is None:
-            version_id = insert_row(version, INS_VERSION, cursor)
-
-        email['version'] = version_id
-        insert_row(email, INS_EMAIL_VERSION, cursor)
+        if version_id is not None:
+            email['version'] = version_id
+            insert_row(email, INS_EMAIL_VERSION, cursor)
 
     insert_row(email, INS_EMAIL_SENTTO, cursor)
 

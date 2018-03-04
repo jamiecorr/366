@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS EmailAddress
 (
     EmailAddressID INT(32) NOT NULL,
     CustomerID VARCHAR(32),
-    DomainID VARCHAR(64),
+    DomainID INT,
     PRIMARY KEY (EmailAddressID),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
     FOREIGN KEY (DomainID) REFERENCES Domain(DomainID)

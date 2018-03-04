@@ -85,8 +85,8 @@ INSERT INTO Domain (DomainName)
 SELECT DISTINCT DomainName FROM CP_Account;
 
 # Fills EmailAddress with info from the CP_Account table
-INSERT INTO EmailAddress (EmailAddressID, CustomerID, Domain)
-SELECT distinct EmailID, CustomerID, DomainName
+INSERT INTO EmailAddress (EmailAddressID, CustomerID, DomainID)
+SELECT distinct EmailID, CustomerID, DomainID
 FROM CP_Account;
 
 INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDate) SELECT RegistrationID,SourceID,STR_TO_DATE(RegistrationDate,'%m/%d/%Y') FROM CP_Device;

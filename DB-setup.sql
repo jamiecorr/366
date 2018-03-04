@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS Domain
 (
     DomainID INT AUTO_INCREMENT,
     DomainName VARCHAR(64),
-    PRIMARY KEY (DomainName)
+    PRIMARY KEY (DomainID)
 );
 
 CREATE TABLE IF NOT EXISTS EmailAddress

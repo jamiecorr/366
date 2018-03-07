@@ -87,104 +87,35 @@ ALTER TABLE Device DROP COLUMN PurchaseStoreState;
 ALTER TABLE Device DROP COLUMN CustomerID;
 ALTER TABLE Device DROP COLUMN Ecomm;
 
-INSERT INTO EmailCampaign(CampaignName,DeploymentDate) (SELECT Distinct EmailCampaignName,STR_TO_DATE(Fulldate,'%m/%d/%Y') FROM CP_Email_Final);
-INSERT INTO Audience(Audience) SELECT DISTINCT AudienceSegment FROM CP_Email_Final;
-INSERT INTO SubjectLine(SubjectLine) SELECT DISTINCT SubjectLineCode FROM CP_Email_Final;
+INSERT INTO EmailCampaign(CampaignName,DeploymentDate) 
+(SELECT Distinct EmailCampaignName,STR_TO_DATE(Fulldate,'%m/%d/%Y') FROM CP_Email_Final);
 
-# TO DO: BROKEN BECAUSE OF NEW EMAIL STAR SCHEMA
-INSERT INTO Email(EmailCampaignID) SELECT distinct c.id FROM EmailCampaign c;
+INSERT INTO Audience (Audience)
+SELECT DISTINCT AudienceSegment
+FROM CP_Email_Final
+WHERE AudienceSegment != '';
+
+INSERT INTO SubjectLine (SubjectLine)
+SELECT DISTINCT SubjectLineCode
+FROM CP_Email_Final
+WHERE CP_Email_Final.SubjectLineCode != '';
+
+INSERT INTO Version (Version)
+SELECT DISTINCT EmailVersion
+FROM CP_Email_Final
+WHERE CP_Email_Final.EmailVersion != '';
 
 # Fills Domain with domain names from CP_Account
 INSERT INTO Domain (DomainName)
 SELECT DISTINCT DomainName FROM CP_Account;
 
 # Fills EmailAddress with info from the CP_Account table
-INSERT INTO EmailAddress (EmailAddressID, CustomerID, DomainID)
-SELECT distinct c.EmailID, c.CustomerID, d.DomainID
-FROM CP_Account c
-JOIN Domain d ON c.DomainName = d.DomainName;
+INSERT INTO EmailAddress (EmailAddressID, CustomerID, Domain)
+SELECT distinct EmailID, CustomerID, DomainName
+FROM CP_Account
+UNION
+SELECT distinct EmailID, NULL, NULL
+FROM CP_Email_Final
+WHERE EmailID NOT IN (SELECT DISTINCT EmailID FROM CP_Account);
 
 INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDate) SELECT RegistrationID,SourceID,STR_TO_DATE(RegistrationDate,'%m/%d/%Y') FROM CP_Device;
-
-ALTER TABLE EmailEvent DROP FOREIGN KEY d;
-ALTER TABLE EmailEvent DROP INDEX  d;
-
-ALTER TABLE EmailSentTo MODIFY EmailCampaignID varchar(255);
-ALTER TABLE EmailSentTo MODIFY SubjectLineID varchar(255);
-ALTER TABLE EmailSentTo MODIFY AudienceID varchar(255);
-
-INSERT INTO EmailSentTo (EmailVersion,emailAddressID,EmailCampaignID,SubjectLineID,AudienceID)
-    SELECT distinct EmailVersion,f.EmailID,f.EmailCampaignName,f.SubjectLineCode,f.AudienceSegment FROM CP_Email_Final f where f.EmailID in (SELECT EmailAddressID FROM EmailAddress);
-
-UPDATE EmailSentTo e JOIN SubjectLine c ON e.SubjectLineID = c.SubjectLine SET e.SubjectLineID = c.id;
-ALTER TABLE EmailSentTo MODIFY SubjectLineID int(32);
-ALTER TABLE EmailSentTo ADD FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id);
-
-UPDATE EmailSentTo e JOIN Audience c ON e.AudienceID = c.Audience SET e.AudienceID = c.id;
-ALTER TABLE EmailSentTo MODIFY AudienceID int(32);
-ALTER TABLE EmailSentTo ADD FOREIGN KEY (AudienceID) REFERENCES Audience(id);
-#Todo fix foreign keys in EmailSentTo and EmailEvent
-#UPDATE EmailSentTo e JOIN EmailCampaign c ON e.EmailCampaignID = c.CampaignName SET e.EmailCampaignID = c.id;
-#Fills Link
-ALTER TABLE Link MODIFY EmailCampaignID varchar(255);
-ALTER TABLE Link MODIFY SubjectLineID varchar(255);
-ALTER TABLE Link MODIFY AudienceID varchar(255);
-
-ALTER TABLE EmailEvent MODIFY EmailCampaignID varchar(255);
-ALTER TABLE EmailEvent MODIFY SubjectLineID varchar(255);
-ALTER TABLE EmailEvent MODIFY AudienceID varchar(255);
-
-insert into Link (LinkName, LinkURL, EmailVersion, EmailCampaignID, SubjectLineID, AudienceID)
-select distinct HyperlinkName, EmailURL, EmailVersion, EmailCampaignName, SubjectLineCode, AudienceSegment from CP_Email_Final
-where EmailID in (SELECT EmailAddressID FROM EmailAddress);
-
-insert into EmailEvent (eventType, eventDate, EmailVersion, EmailCampaignID, SubjectLineID, AudienceID, emailAddressID, linkID)
-select distinct EmailEventType,
-  STR_TO_DATE(EmailEventDateTime, '%m/%d/%y %h:%i %p'),
-  ef.EmailVersion, ef.EmailCampaignName,
-  ef.SubjectLineCode, ef.AudienceSegment,
-  EmailID, LinkID from CP_Email_Final ef
-  join Link l on ef.HyperlinkName = l.LinkName
-  and ef.EmailURL = l.LinkURL
-  and ef.EmailVersion = l.EmailVersion
-  and ef.EmailCampaignName = l.EmailCampaignID
-  and ef.AudienceSegment = l.AudienceID
-  and ef.SubjectLineCode = l.SubjectLineID
-where EmailID in (SELECT EmailAddressID FROM EmailAddress);
-
-UPDATE Link l JOIN EmailCampaign c ON l.EmailCampaignID = c.CampaignName SET l.EmailCampaignID = c.id;
-UPDATE Link l JOIN SubjectLine s on l.SubjectLineID = s.SubjectLine SET l.SubjectLineID = s.id;
-UPDATE Link l JOIN Audience a on l.AudienceID = a.Audience SET l.AudienceID = a.id;
-
-UPDATE EmailEvent l JOIN EmailCampaign c ON l.EmailCampaignID = c.CampaignName SET l.EmailCampaignID = c.id;
-UPDATE EmailEvent l JOIN SubjectLine s on l.SubjectLineID = s.SubjectLine SET l.SubjectLineID = s.id;
-UPDATE EmailEvent l JOIN Audience a on l.AudienceID = a.Audience SET l.AudienceID = a.id;
-
-ALTER TABLE Link MODIFY EmailCampaignID INTEGER;
-ALTER TABLE Link MODIFY SubjectLineID INTEGER;
-ALTER TABLE Link MODIFY AudienceID INTEGER;
-
-ALTER TABLE EmailEvent MODIFY EmailCampaignID INTEGER;
-ALTER TABLE EmailEvent MODIFY SubjectLineID INTEGER;
-ALTER TABLE EmailEvent MODIFY AudienceID INTEGER;
-
-ALTER TABLE Link ADD CONSTRAINT
-FOREIGN KEY (EmailVersion)
-REFERENCES Email(Version);
-
-ALTER TABLE Link ADD CONSTRAINT
-FOREIGN KEY (AudienceID)
-REFERENCES Audience(id);
-
-ALTER TABLE Link ADD CONSTRAINT
-FOREIGN KEY (EmailCampaignID)
-REFERENCES EmailCampaign(id);
-
-ALTER TABLE Link ADD CONSTRAINT
-FOREIGN KEY (SubjectLineID)
-REFERENCES SubjectLine(id);
-
-ALTER TABLE EmailEvent ADD CONSTRAINT FOREIGN KEY (EmailVersion) REFERENCES Email(Version);
-ALTER TABLE EmailEvent ADD CONSTRAINT FOREIGN KEY (AudienceID) REFERENCES Audience(id);
-ALTER TABLE EmailEvent ADD CONSTRAINT FOREIGN KEY (EmailCampaignID) REFERENCES EmailCampaign(id);
-ALTER TABLE EmailEvent ADD CONSTRAINT FOREIGN KEY (SubjectLineID) REFERENCES SubjectLine(id);

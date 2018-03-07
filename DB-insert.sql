@@ -1,3 +1,16 @@
+CREATE TABLE CP_Account LIKE cpe366_readonly.CP_Account;
+INSERT CP_Account SELECT * FROM cpe366_readonly.CP_Account;
+
+CREATE TABLE CP_Device LIKE cpe366_readonly.CP_Device;
+INSERT CP_Device SELECT * FROM cpe366_readonly.CP_Device;
+
+CREATE TABLE CP_Device_Model LIKE cpe366_readonly.CP_Device_Model;
+INSERT CP_Device_Model SELECT * FROM cpe366_readonly.CP_Device_Model;
+
+CREATE TABLE CP_Email_Final LIKE cpe366_readonly.CP_Email_Final;
+INSERT CP_Email_Final SELECT * FROM cpe366_readonly.CP_Email_Final;
+
+
 #Inserting into Customer
 INSERT INTO Gender(id,Gender) VALUES(-1,'N');
 INSERT INTO Gender(id,Gender) VALUES(1,'M');

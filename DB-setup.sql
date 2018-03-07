@@ -247,3 +247,22 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
    FOREIGN KEY (linkID) REFERENCES Link(LinkID)
 );
 
+CREATE TABLE AccountRegistrationReport
+(
+  distinctCustomerIds INT     NOT NULL,
+  Permission          CHAR(1) NOT NULL,
+  STATE               VARCHAR(127),
+  Month               CHAR(2) NOT NULL,
+  YEAR                CHAR(4),
+  CONSTRAINT AccountRegistrationReport_pk PRIMARY KEY (State, Month, Year, Permission)
+);
+
+CREATE TABLE DeviceRegistrationReport
+(
+    distinctCustomerIds INT NOT NULL,
+    Carrier varchar(192) NOT NULL,
+    DeviceModel varchar(192),
+    Month char(2) NOT NULL,
+    Year char(4) NOT NULL,
+    CONSTRAINT DeviceRegistrationReport_pk PRIMARY KEY (Carrier, DeviceModel, Month, Year)
+);

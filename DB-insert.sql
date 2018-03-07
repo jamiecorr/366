@@ -30,6 +30,10 @@ ALTER TABLE Device ADD COLUMN PurchaseStoreState CHAR(3);
 ALTER TABLE Device ADD COLUMN CustomerID VARCHAR(32);
 ALTER TABLE Device ADD COLUMN Ecomm CHAR(1);
 
+ALTER TABLE Purchase ADD COLUMN PurchaseStoreName VARCHAR(64);
+ALTER TABLE Purchase ADD COLUMN PurchaseStoreCity VARCHAR(64);
+ALTER TABLE Purchase ADD COLUMN PurchaseStoreState CHAR(3);
+
 #Inserts all possible carriers into carrier table, plus a dummy -1 value
 INSERT INTO Carrier(CarrierName) (SELECT distinct Carrier from CP_Device_Model);
 INSERT INTO Carrier(ID,CarrierName) VALUES(-1,"No Carrier Information Found");
@@ -56,7 +60,6 @@ INSERT INTO Customer(CustomerID,Permission,Tier,RegistrationDate,RegisteredAt,Nu
 INSERT INTO Customer(CustomerID) (SELECT distinct Device.CustomerID FROM Device WHERE NOT Device.CustomerID IN ( SELECT distinct CustomerID FROM Customer));
 
 UPDATE Customer c JOIN (SELECT CustomerID,NumberOfRegistrations FROM CP_Device group BY  CustomerID) as z ON c.CustomerID = z.CustomerID SET c.NumRegistrations = z.NumberOfRegistrations;
-
 UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN Gender G ON r.Gender = G.Gender SET c.GenderID = G.id;
 UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN IncomeLevel G ON r.IncomeLevel = G.IncomeLevel SET c.IncomeLevelID = G.id;
 UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN Language G ON r.Language = G.Language SET c.LanguageId = G.id;
@@ -64,6 +67,16 @@ UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON 
 UPDATE Customer c JOIN (SELECT * FROM CP_Account r group by CustomerId) as r ON c.CustomerID = r.customerId JOIN State G ON r.State = G.State SET c.StateID = G.id;
 
 INSERT INTO Purchase(PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,DeviceRegistrationId,CustomerID) (SELECT PurchaseDate,PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity,Ecomm,RegistrationID,CustomerID FROM Device);
+
+INSERT INTO PurchaseLocation(PurchaseStoreName,PurchaseStoreCity,PurchaseStoreState) (SELECT DISTINCT PurchaseStoreName,PurchaseStoreCity,PurchaseStoreState FROM Purchase);
+
+UPDATE Purchase p JOIN PurchaseLocation l SET PurchaseLocationID = l.id WHERE p.PurchaseStoreName = l.PurchaseStoreName
+                                                AND p.PurchaseStoreCity = l.PurchaseStoreCity
+                                                AND l.PurchaseStoreState = p.PurchaseStoreState;
+
+ALTER TABLE Purchase DROP PurchaseStoreState;
+ALTER TABLE Purchase DROP PurchaseStoreName;
+ALTER TABLE Purchase DROP PurchaseStoreCity;
 
 UPDATE Device d JOIN Purchase p ON d.CustomerID = p.CustomerID AND p.DeviceRegistrationID = d.RegistrationID SET d.purchaseId = p.id;
 

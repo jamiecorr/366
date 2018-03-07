@@ -28,6 +28,8 @@ DROP TABLE IF EXISTS Gender;
 DROP TABLE IF EXISTS RegistrationSource;
 DROP TABLE IF EXISTS Device_Type;
 DROP TABLE IF EXISTS Carrier;
+DROP TABLE IF EXISTS PurchaseLocation;
+
 
 CREATE TABLE CP_Account LIKE cpe366_readonly.CP_Account;
 INSERT CP_Account SELECT * FROM cpe366_readonly.CP_Account;

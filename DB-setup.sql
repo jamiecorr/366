@@ -89,21 +89,32 @@ CREATE TABLE IF NOT EXISTS Device
     UNIQUE(ID)
 );
 
-CREATE TABLE IF NOT EXISTS Purchase
+CREATE TABLE IF NOT EXISTS PurchaseLocation
 (
-    id INT AUTO_INCREMENT NOT NULL,
-    PurchaseDate DATE,
+    id int AUTO_INCREMENT,
     PurchaseStoreName VARCHAR(255),
     PurchaseStoreState CHAR(3),
     PurchaseStoreCity VARCHAR(255),
+    PRIMARY KEY (PurchaseStoreName,PurchaseStoreState,PurchaseStoreCity),
+    UNIQUE(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS Purchase
+(
+    id INT AUTO_INCREMENT NOT NULL,
     Ecomm CHAR(1),
     DeviceRegistrationID VARCHAR(64) NOT NULL,
     CustomerID VARCHAR(32) NOT NULL,
+    PurchaseLocationID int,
+    PurchaseDate DATE,
     FOREIGN KEY (DeviceRegistrationID) REFERENCES Device(RegistrationID),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    FOREIGN KEY (PurchaseLocationID) REFERENCES PurchaseLocation(id),
     PRIMARY KEY (CustomerID, DeviceRegistrationID),
     UNIQUE(id)
 );
+
 
 CREATE TABLE IF NOT EXISTS DeviceRegistration(
     deviceRegistrationID VARCHAR(64),

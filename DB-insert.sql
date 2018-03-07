@@ -106,21 +106,8 @@ JOIN Domain d ON c.DomainName = d.DomainName;
 
 INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDate) SELECT RegistrationID,SourceID,STR_TO_DATE(RegistrationDate,'%m/%d/%Y') FROM CP_Device;
 
-#TODO BROKEN BELOW
-
-# Fills EmailSentTo table using Email and EmailAddress
-
-ALTER TABLE EmailSentTo DROP FOREIGN KEY a;
-ALTER TABLE EmailSentTo DROP FOREIGN KEY b;
-ALTER TABLE EmailSentTo DROP FOREIGN KEY c;
-
-ALTER TABLE EmailSentTo DROP INDEX  a;
-ALTER TABLE EmailSentTo DROP INDEX  b;
-ALTER TABLE EmailSentTo DROP INDEX  c;
-
 ALTER TABLE EmailEvent DROP FOREIGN KEY d;
 ALTER TABLE EmailEvent DROP INDEX  d;
-
 
 ALTER TABLE EmailSentTo MODIFY EmailCampaignID varchar(255);
 ALTER TABLE EmailSentTo MODIFY SubjectLineID varchar(255);

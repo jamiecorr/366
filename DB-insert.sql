@@ -131,4 +131,4 @@ SELECT distinct EmailID, NULL, NULL
 FROM CP_Email_Final
 WHERE EmailID NOT IN (SELECT DISTINCT EmailID FROM CP_Account);
 
-INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDate) SELECT RegistrationID,SourceID,STR_TO_DATE(RegistrationDate,'%m/%d/%Y') FROM CP_Device;
+INSERT INTO DeviceRegistration(deviceRegistrationID,registeredAt,registrationDate) SELECT distinct RegistrationID,SourceID,STR_TO_DATE(RegistrationDate,'%m/%d/%Y') FROM CP_Device;

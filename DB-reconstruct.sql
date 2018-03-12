@@ -10,7 +10,21 @@ JOIN Gender g ON g.id = c.GenderID
 JOIN IncomeLevel i ON i.id = c.IncomeLevelID
 JOIN Language l ON l.id = c.LanguageID;
 
-
+# Recreates CP_Email_Final 
+select E2.emailAddressID, EA.Audience, ec.CampaignName, EV.Version,
+    ES.SubjectLine, ec.DeploymentDate, E3.eventType, E3.eventDate, L2.LinkName,
+    L2.LinkURL
+from Email e
+join EmailCampaign ec on e.EmailCampaignID = ec.id
+left join (select EA.EmailID, A.Audience FROM EmailAudience EA
+join Audience A ON EA.AudienceID = A.id) as EA on EA.EmailID = e.id
+left join (select EV.EmailID, V.Version from EmailVersion EV
+join Version V ON EV.VersionID = V.id) as EV on EV.EmailID = e.id
+left join (select S.EmailID, L.SubjectLine from EmailSubject S
+join SubjectLine L ON S.SubjectLineID = L.id) as ES on ES.EmailID = e.id
+left join Link L2 ON e.id = L2.EmailID
+join EmailSentTo E2 ON e.id = E2.EmailID
+left join EmailEvent E3 ON E2.emailAddressID = E3.emailAddressID and E2.EmailID = E3.EmailID;
 
 #Recreating CP_Device_Model
 SELECT distinct D.DeviceModel,DeviceName,Devicetype,CarrierName FROM Device JOIN Device_Type D ON Device.DeviceModel = D.DeviceModel JOIN Carrier C ON D.CarrierID = C.ID;

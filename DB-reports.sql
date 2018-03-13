@@ -17,13 +17,14 @@ join SubjectLine L ON S.SubjectLineID = L.id) as ES on ES.EmailID = e.id
 join EmailEvent ee on ee.EmailID = e.id;
 
 # Email query
+insert into EmailCampaignPerformance
 select ce1.CampaignName, ce1.Audience, ce1.Version, ce1.Subject, ce1.DeploymentDate,
   coalesce(emailSent-emailBounced, 0) as uniqueDelivered,
   uniqueOpened, uniqueClickers,
-  coalesce(uniqueOpened/coalesce(emailSent-emailBounced, 0), 0) as openRate,
-  coalesce(uniqueClickers/uniqueOpened, 0) as clickToOpen,
-  coalesce(uniqueClickers/coalesce(emailSent-emailBounced, 0), 0) as clickRate,
-  coalesce(emailUnsub/uniqueClickers, 0) as unsubRate
+  if(emailBounced!=0,coalesce(uniqueOpened/coalesce(emailSent-emailBounced, 0), 0), 0) as openRate,
+  if(uniqueOpened!=0,coalesce(uniqueClickers/uniqueOpened, 0), 0) as clickToOpen,
+  if(coalesce(emailSent-emailBounced, 0) !=0,coalesce(uniqueClickers/coalesce(emailSent-emailBounced, 0), 0),0) as clickRate,
+  if(uniqueClickers!=0,coalesce(emailUnsub/uniqueClickers, 0),0) as unsubRate
 from
 (select ce1.CampaignName, ce1.Audience, ce1.Version, ce1.Subject, ce1.DeploymentDate,
      count(distinct ce1.id) as emailSent

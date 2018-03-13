@@ -248,10 +248,10 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
 );
 
 CREATE TABLE EmailCampaignPerformance(
-  CampaignName VARCHAR(32),
-  Audience VARCHAR(32),
-  Version VARCHAR(32),
-  SubjectLine VARCHAR(32),
+  CampaignName VARCHAR(255),
+  Audience VARCHAR(255),
+  Version VARCHAR(255),
+  SubjectLine VARCHAR(255),
   DeploymentDate DATE,
   uniqueEmailsDelivered INTEGER,
   uniqueEmailsOpened INTEGER,

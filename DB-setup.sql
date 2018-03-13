@@ -247,6 +247,23 @@ CREATE TABLE IF NOT EXISTS EmailEvent(
    FOREIGN KEY (linkID) REFERENCES Link(LinkID)
 );
 
+CREATE TABLE EmailCampaignPerformance(
+  CampaignName VARCHAR(32),
+  Audience VARCHAR(32),
+  Version VARCHAR(32),
+  SubjectLine VARCHAR(32),
+  DeploymentDate DATE,
+  uniqueEmailsDelivered INTEGER,
+  uniqueEmailsOpened INTEGER,
+  uniqueClickers INTEGER,
+  openRate INTEGER,
+  clickToOpenRate INTEGER,
+  clickRate INTEGER,
+  unsubRate INTEGER,
+
+  PRIMARY KEY (CampaignName, Audience, Version, SubjectLine, DeploymentDate)
+);
+
 CREATE TABLE AccountRegistrationReport
 (
   distinctCustomerIds INT     NOT NULL,

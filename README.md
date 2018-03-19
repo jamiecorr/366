@@ -7,6 +7,6 @@ DB-cleanup: Deletes all tables
 
 DB-reconstruct: Recreates original data set
 
-DB-report: Creates warehouse tables
+DB-reports: Creates warehouse tables
 
 refresh-schema: Performs a refresh of the DB from the CSV

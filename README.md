@@ -1,6 +1,6 @@
 # 366
 
-[Final Project Report](https://github.com/jamiecorr/366/blob/master/Final_Report.pdf
+[Final Project Report](https://github.com/jamiecorr/366/blob/master/Final_Report.pdf)
 
 [Data Warehouse Report](https://github.com/jamiecorr/366/blob/master/Data_Warehouse_Report.pdf)
 

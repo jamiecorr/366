@@ -1,4 +1,10 @@
 # 366
+
+[Final Project Report](https://github.com/jamiecorr/366/blob/master/Final_Report.pdf
+
+[Data Warehouse Report](https://github.com/jamiecorr/366/blob/master/Data_Warehouse_Report.pdf)
+
+
 DB-setup: Creates all tables in Database
 
 DB-insert: Inserts values from CSV to Database
